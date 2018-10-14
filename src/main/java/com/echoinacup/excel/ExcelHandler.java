@@ -44,7 +44,6 @@ public class ExcelHandler {
             int rowEnd = spreadsheet.getLastRowNum();
 
 
-
             for (int rowNum = rowStart; rowNum <= rowEnd; rowNum++) {
                 Map<String, Object> companyMap = new LinkedHashMap<>();
                 XSSFRow r = spreadsheet.getRow(rowNum);
@@ -109,17 +108,9 @@ public class ExcelHandler {
         for (int i = 0; i < 27; i++) { //TODO add constans
             Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
             String value = cell.getStringCellValue();
-//            if (StringUtils.isNotEmpty(value) && !value.trim().equals("BASIC INFO") && !value.trim().equals("SOCIAL MEDIA:")) {
             if (StringUtils.isNotEmpty(value)) {
                 headerMap.put(value, "");
             }
-//            if (cell == null) {
-//                // The spreadsheet is empty in this cell
-//                System.out.println(getCellValueAsString(cell));
-//            } else {
-//                // Do something useful with the cell's contents
-//                System.out.println(getCellValueAsString(cell));
-//            }
         }
     }
 
@@ -149,34 +140,10 @@ public class ExcelHandler {
                     strCellValue = Boolean.toString(cell.getBooleanCellValue());
                     break;
                 case BLANK:
-                    strCellValue = "empty";
+                    strCellValue = "";
                     break;
             }
         }
         return strCellValue;
     }
 }
-
-// Decide which rows to process
-//    int rowStart = Math.min(15, sheet.getFirstRowNum());
-//    int rowEnd = Math.max(1400, sheet.getLastRowNum());
-//
-//    for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
-//        Row r = sheet.getRow(rowNum);
-//        if (r == null) {
-//        // This whole row is empty
-//        // Handle it as needed
-//        continue;
-//        }
-//
-//        int lastColumn = Math.max(r.getLastCellNum(), MY_MINIMUM_COLUMN_COUNT);
-//
-//        for (int cn = 0; cn < lastColumn; cn++) {
-//        Cell c = r.getCell(cn, Row.RETURN_BLANK_AS_NULL);
-//        if (c == null) {
-//        // The spreadsheet is empty in this cell
-//        } else {
-//        // Do something useful with the cell's contents
-//        }
-//        }
-//        }
