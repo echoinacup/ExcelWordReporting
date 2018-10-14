@@ -5,17 +5,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ExcelHandler {
 
@@ -41,9 +43,10 @@ public class ExcelHandler {
             int rowStart = spreadsheet.getFirstRowNum();
             int rowEnd = spreadsheet.getLastRowNum();
 
-            Map<String, Object> companyMap = new LinkedHashMap<>();
+
 
             for (int rowNum = rowStart; rowNum <= rowEnd; rowNum++) {
+                Map<String, Object> companyMap = new LinkedHashMap<>();
                 XSSFRow r = spreadsheet.getRow(rowNum);
                 if (r.getRowNum() == 0) {
                     fillInDescriptionMapWithKeys(r, headerMap);
