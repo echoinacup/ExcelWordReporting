@@ -10,6 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.util.*;
 public class ExcelHandler {
 
     private FileService fileService;
+    private static MissingCellPolicy xRow;
 
 
     @Autowired
@@ -36,36 +38,48 @@ public class ExcelHandler {
             XSSFWorkbook workbook = new XSSFWorkbook(file);
             XSSFSheet spreadsheet = workbook.getSheetAt(1);
 
-            Iterator<Row> rowIterator = spreadsheet.iterator();
+            int rowStart = spreadsheet.getFirstRowNum();
+            int rowEnd = spreadsheet.getLastRowNum();
 
             Map<String, Object> companyMap = new LinkedHashMap<>();
-            while (rowIterator.hasNext()) {
-                XSSFRow row = (XSSFRow) rowIterator.next();
-                Iterator<Cell> cellIterator = row.cellIterator();
 
-                if (row.getRowNum() == 0) {
-                    fillInDescriptionMapWithKeys(cellIterator, headerMap);
+            for (int rowNum = rowStart; rowNum <= rowEnd; rowNum++) {
+                XSSFRow r = spreadsheet.getRow(rowNum);
+                if (r.getRowNum() == 0) {
+                    fillInDescriptionMapWithKeys(r, headerMap);
                     continue;
                 }
+                if (r == null) {
+                    // This whole row is empty
+                    // Handle it as needed
+                    continue;
+                }
+
 //                System.out.println("map size " + headerMap.size());
 //                headerMap.forEach((k, v) -> System.out.println("key " + k));
                 companyMap.putAll(headerMap);
                 List<String> values = new ArrayList<>();
-                while (cellIterator.hasNext()) {
-                    Cell cell = cellIterator.next();
-                    values.add(getCellValueAsString(cell));
+//
+                for (int i = 0; i < r.getLastCellNum(); i++) {
+                    Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
+                    String str = getCellValueAsString(cell);
+                    if (StringUtils.isNotEmpty(str)) {
+                        values.add(str);
+                    } else {
+                        values.add(" ");
+                    }
                 }
-
-//                System.out.println("values size " + values.size());
-//                values.forEach(v -> System.out.println(v));
+                System.out.println("values size " + values.size());
+                values.forEach(v -> System.out.println(v));
                 int amount = 0;
                 for (String key : companyMap.keySet()) {
                     companyMap.put(key, values.get(amount++));
                 }
 
                 allCompanies.add(companyMap);
-                System.out.println();
             }
+
+
         } catch (IOException | InvalidFormatException e) {
             System.out.println(e.getMessage());
         }
@@ -74,15 +88,35 @@ public class ExcelHandler {
         allCompanies.forEach(i -> System.out.println(i));
     }
 
+    private void iterateCells(XSSFRow r, int lastColumn) {
+        for (int i = 0; i < lastColumn; i++) {
+            Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
+            if (cell == null) {
+                // The spreadsheet is empty in this cell
+                System.out.println(getCellValueAsString(cell));
+            } else {
+                // Do something useful with the cell's contents
+                System.out.println(getCellValueAsString(cell));
+            }
+        }
+    }
 
-    private void fillInDescriptionMapWithKeys(Iterator<Cell> cellIterator, Map<String, String> headerMap) {
-        while (cellIterator.hasNext()) {
-            Cell cell = cellIterator.next();
+
+    private void fillInDescriptionMapWithKeys(XSSFRow r, Map<String, String> headerMap) {
+        for (int i = 0; i < 27; i++) { //TODO add constans
+            Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
             String value = cell.getStringCellValue();
-            if (!value.trim().equals("BASIC INFO") && !value.trim().equals("SOCIAL MEDIA:") && StringUtils.isNotEmpty(value)) {
+//            if (StringUtils.isNotEmpty(value) && !value.trim().equals("BASIC INFO") && !value.trim().equals("SOCIAL MEDIA:")) {
+            if (StringUtils.isNotEmpty(value)) {
                 headerMap.put(value, "");
             }
-
+//            if (cell == null) {
+//                // The spreadsheet is empty in this cell
+//                System.out.println(getCellValueAsString(cell));
+//            } else {
+//                // Do something useful with the cell's contents
+//                System.out.println(getCellValueAsString(cell));
+//            }
         }
     }
 
@@ -120,7 +154,7 @@ public class ExcelHandler {
     }
 }
 
-    // Decide which rows to process
+// Decide which rows to process
 //    int rowStart = Math.min(15, sheet.getFirstRowNum());
 //    int rowEnd = Math.max(1400, sheet.getLastRowNum());
 //
