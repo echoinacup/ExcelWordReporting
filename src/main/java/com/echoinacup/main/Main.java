@@ -40,7 +40,8 @@ public class Main { //} extends Application {
         ApplicationContext context = new AnnotationConfigApplicationContext(MainConfiguration.class);
         ExcelHandler excelHandler = context.getBean(ExcelHandler.class);
 
-        excelHandler.readExcelTemplate();
+        excelHandler.readExcelTemplateSub();
+//        excelHandler.readExcelTemplate();
 //        launch(args);
 
     }
