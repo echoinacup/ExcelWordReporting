@@ -1,5 +1,6 @@
 package com.echoinacup.main;
 
+import com.echoinacup.entities.Company;
 import com.echoinacup.excel.ExcelHandler;
 import com.echoinacup.file.FileService;
 import javafx.application.Application;
@@ -39,6 +40,7 @@ public class Main { //} extends Application {
     public static void main(String[] args) {
         ApplicationContext context = new AnnotationConfigApplicationContext(MainConfiguration.class);
         ExcelHandler excelHandler = context.getBean(ExcelHandler.class);
+
 
         excelHandler.readExcelTemplateSub();
 //        excelHandler.readExcelTemplate();

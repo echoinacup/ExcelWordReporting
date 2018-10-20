@@ -26,6 +26,7 @@ public class ExcelHandler {
     private static MissingCellPolicy xRow;
     private static final int BASIC_INFO_SHEET = 1;
     private static final int SUBS_SOURCES_SHEET = 2;
+    private static final String dataSourcesHeader = "DATA SOURCES (COMPANY WEBSITE, COMPANY PROFILE IN STOCK EXCHANGE, NEWS ARTICLES OR OTHER): LINKS (HTTP://…)";
 
     @Autowired
     public void setFileService(FileService fileService) {
@@ -52,36 +53,75 @@ public class ExcelHandler {
                 initCompanyName = getCellValueAsString(firstRow.getCell(1, xRow.RETURN_BLANK_AS_NULL));
             }
             //TODO handle ERROR
+            boolean isSubsidiary = true;
+            boolean isActivities = false;
+            boolean isDataSources = false;
 
-            for (int rowNum = rowStart; rowNum <= rowEnd; rowNum++) {
+            start:
+            for (int rowNum = rowStart + 1; rowNum <= rowEnd; rowNum++) { //skip header  //TODO ask if structure the same
                 XSSFRow r = spreadsheet.getRow(rowNum);
-
-                if (r.getRowNum() == 0) continue; //skip the first line ???
 
                 if (handleEmptyRow(r)) continue;
 
 
-                List<String> values = new ArrayList<>();
-
-                //TODO differences between two sheets
+                List<String> sub = new ArrayList<>();
+                List<String> activities = new ArrayList<>();
+                List<String> dataSources = new ArrayList<>();
 
 
                 for (int i = 1; i < r.getLastCellNum(); i++) {
-                  
+                    if (initCompanyName.equals(getCellValueAsString(firstRow.getCell(1, xRow.RETURN_BLANK_AS_NULL)))) {
+                        Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
+                        String str = getCellValueAsString(cell);
 
-                    Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
-                    String str = getCellValueAsString(cell);
-                    if (StringUtils.isNotEmpty(str)) {
-                        values.add(str);
-                    } else {
-                        values.add(" ");
+                        if (isSubsidiary) {
+                            if (!"DATE (DAY FULL MONTH YEAR)".equals(str)) {
+                                if (StringUtils.isNotEmpty(str)) {
+                                    sub.add(str);
+                                } else {
+                                    sub.add("");
+                                }
+                            } else {
+                                isSubsidiary = false;
+                                isActivities = true;
+                                continue start;
+                            }
+                        } else if (isActivities) {
+                            if (!StringUtils.equals(dataSourcesHeader, str)) {
+                                if (StringUtils.isNotEmpty(str)) {
+                                    activities.add(str);
+                                } else {
+                                    activities.add("");
+                                }
+                            } else {
+                                isActivities = false;
+                                isDataSources = true;
+                                continue start;
+                            }
+                        } else if (isDataSources) {
+                            if (!"SUBSIDIARY COMPANY (ALL THE ONES YOU CAN FIND)".equals(str)) {
+                                if (StringUtils.isNotEmpty(str)) {
+                                    dataSources.add(str);
+                                } else {
+                                    dataSources.add("");
+                                }
+                            } else {
+                                isDataSources = false;
+                                isSubsidiary = true;
+                                continue start;
+                            }
+                        }
                     }
 
+
                 }
-                values.forEach(v -> System.out.println(v + "  "));
+                sub.forEach(v -> System.out.println(v + "  "));
+
+                activities.forEach(v -> System.out.println(v + "  "));
+
+                dataSources.forEach(v -> System.out.println(v + "  "));
 
             }
-
 
         } catch (IOException | InvalidFormatException e) {
             System.out.println(e.getMessage());
