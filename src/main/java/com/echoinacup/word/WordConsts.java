@@ -1,6 +1,6 @@
-package com.echoinacup.excel;
+package com.echoinacup.word;
 
-public class ExcelConsts {
+public class WordConsts {
 
     //TODO not sure
     public String LABEL;

@@ -70,56 +70,57 @@ public class ExcelHandler {
 
 
                 for (int i = 1; i < r.getLastCellNum(); i++) {
-                    if (initCompanyName.equals(getCellValueAsString(firstRow.getCell(1, xRow.RETURN_BLANK_AS_NULL)))) {
-                        Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
-                        String str = getCellValueAsString(cell);
+                    String currentName = getCellValueAsString(r.getCell(1, xRow.RETURN_BLANK_AS_NULL));
+                    Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
+                    String str = getCellValueAsString(cell);
 
-                        if (isSubsidiary) {
-                            if (!"DATE (DAY FULL MONTH YEAR)".equals(str)) {
-                                if (StringUtils.isNotEmpty(str)) {
-                                    sub.add(str);
-                                } else {
-                                    sub.add("");
-                                }
+                    if (isSubsidiary && initCompanyName.equals(currentName)) {
+                        if (!"DATE (DAY FULL MONTH YEAR)".equals(str)) {
+                            if (StringUtils.isNotEmpty(str)) {
+                                sub.add(str);
                             } else {
-                                isSubsidiary = false;
-                                isActivities = true;
-                                continue start;
+                                sub.add("");
                             }
-                        } else if (isActivities) {
-                            if (!StringUtils.equals(dataSourcesHeader, str)) {
-                                if (StringUtils.isNotEmpty(str)) {
-                                    activities.add(str);
-                                } else {
-                                    activities.add("");
-                                }
+                        } else {
+                            isSubsidiary = false;
+                            isActivities = true;
+                            continue start;
+                        }
+                    } else if (isActivities && initCompanyName.equals(currentName)) {
+                        if (!StringUtils.equals(dataSourcesHeader, str)) {
+                            if (StringUtils.isNotEmpty(str)) {
+                                activities.add(str);
                             } else {
-                                isActivities = false;
-                                isDataSources = true;
-                                continue start;
+                                activities.add("");
                             }
-                        } else if (isDataSources) {
-                            if (!"SUBSIDIARY COMPANY (ALL THE ONES YOU CAN FIND)".equals(str)) {
-                                if (StringUtils.isNotEmpty(str)) {
-                                    dataSources.add(str);
-                                } else {
-                                    dataSources.add("");
-                                }
+                        } else {
+                            isActivities = false;
+                            isDataSources = true;
+                            continue start;
+                        }
+                    } else if (isDataSources) {
+                        if (!"SUBSIDIARY COMPANY (ALL THE ONES YOU CAN FIND)".equals(str)) {
+                            if (StringUtils.isNotEmpty(str)) {
+                                dataSources.add(str);
                             } else {
-                                isDataSources = false;
-                                isSubsidiary = true;
-                                continue start;
+                                dataSources.add("");
                             }
+                        } else {
+                            initCompanyName = currentName;
+                            isDataSources = false;
+                            isSubsidiary = true;
+                            continue start;
                         }
                     }
+                    // }
 
 
                 }
-                sub.forEach(v -> System.out.println(v + "  "));
-
-                activities.forEach(v -> System.out.println(v + "  "));
-
-                dataSources.forEach(v -> System.out.println(v + "  "));
+//                sub.forEach(v -> System.out.println(v + "  "));
+//
+//                activities.forEach(v -> System.out.println(v + "  "));
+//
+//                dataSources.forEach(v -> System.out.println(v + "  "));
 
             }
 
@@ -131,7 +132,7 @@ public class ExcelHandler {
     }
 
 
-    public void readExcelTemplate() {
+    public void readExcelBasicInfo() {
         List<Map<String, Object>> allCompanies = new ArrayList<>();
         File file = fileService.readFile();
         Map<String, String> headerMap = new LinkedHashMap<>();
@@ -154,9 +155,6 @@ public class ExcelHandler {
                 companyMap.putAll(headerMap);
 
                 List<String> values = new ArrayList<>();
-
-                //TODO differences between two sheets
-
 
                 for (int i = 0; i < r.getLastCellNum(); i++) {
                     Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);

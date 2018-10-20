@@ -43,7 +43,7 @@ public class Main { //} extends Application {
 
 
         excelHandler.readExcelTemplateSub();
-//        excelHandler.readExcelTemplate();
+//        excelHandler.readExcelBasicInfo();
 //        launch(args);
 
     }
