@@ -34,7 +34,7 @@ public class ExcelHandler {
     }
 
 
-    public void readExcelTemplateSub() {
+    public void processExcelTemplateSub() { //Pass List of companies from the first sheet
         List<Map<String, Object>> allCompanies = new ArrayList<>();
         File file = fileService.readFile();
         List<Company> companies = new ArrayList<>();
@@ -63,11 +63,9 @@ public class ExcelHandler {
 
                 if (handleEmptyRow(r)) continue;
 
-
                 List<String> sub = new ArrayList<>();
                 List<String> activities = new ArrayList<>();
                 List<String> dataSources = new ArrayList<>();
-
 
                 for (int i = 1; i < r.getLastCellNum(); i++) {
                     String currentName = getCellValueAsString(r.getCell(1, xRow.RETURN_BLANK_AS_NULL));
@@ -99,28 +97,28 @@ public class ExcelHandler {
                             continue start;
                         }
                     } else if (isDataSources) {
-                        if (!"SUBSIDIARY COMPANY (ALL THE ONES YOU CAN FIND)".equals(str)) {
+                        if (!"SUBSIDIARY COMPANY (ALL THE ONES YOU CAN FIND)".equals(str) && initCompanyName.equals(currentName)) {
                             if (StringUtils.isNotEmpty(str)) {
                                 dataSources.add(str);
                             } else {
                                 dataSources.add("");
                             }
                         } else {
+                            //TODO init new object per company
                             initCompanyName = currentName;
                             isDataSources = false;
                             isSubsidiary = true;
                             continue start;
                         }
                     }
-                    // }
 
 
                 }
-//                sub.forEach(v -> System.out.println(v + "  "));
-//
-//                activities.forEach(v -> System.out.println(v + "  "));
-//
-//                dataSources.forEach(v -> System.out.println(v + "  "));
+                sub.forEach(v -> System.out.println(v + "  "));
+
+                activities.forEach(v -> System.out.println(v + "  "));
+
+                dataSources.forEach(v -> System.out.println(v + "  "));
 
             }
 
@@ -132,7 +130,7 @@ public class ExcelHandler {
     }
 
 
-    public void readExcelBasicInfo() {
+    public void processExcelBasicInfoSheet() {
         List<Map<String, Object>> allCompanies = new ArrayList<>();
         File file = fileService.readFile();
         Map<String, String> headerMap = new LinkedHashMap<>();
@@ -170,15 +168,12 @@ public class ExcelHandler {
                 for (String key : companyMap.keySet()) {
                     companyMap.put(key, values.get(amount++));
                 }
-
                 allCompanies.add(companyMap);
             }
-
 
         } catch (IOException | InvalidFormatException e) {
             System.out.println(e.getMessage());
         }
-
 
         allCompanies.forEach(i -> System.out.println(i));
     }

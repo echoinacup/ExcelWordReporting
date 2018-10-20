@@ -8,6 +8,7 @@ import java.io.File;
 public class FileService {
 
     private static final String pathToExcelTemplate = "";
+    private static final String pathToWordTemplate = "";
 
 
     public File readFile() {

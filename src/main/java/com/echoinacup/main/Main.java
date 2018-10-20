@@ -1,16 +1,6 @@
 package com.echoinacup.main;
 
-import com.echoinacup.entities.Company;
 import com.echoinacup.excel.ExcelHandler;
-import com.echoinacup.file.FileService;
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -42,8 +32,8 @@ public class Main { //} extends Application {
         ExcelHandler excelHandler = context.getBean(ExcelHandler.class);
 
 
-        excelHandler.readExcelTemplateSub();
-//        excelHandler.readExcelBasicInfo();
+//        excelHandler.processExcelTemplateSub();
+        excelHandler.processExcelBasicInfoSheet();
 //        launch(args);
 
     }
