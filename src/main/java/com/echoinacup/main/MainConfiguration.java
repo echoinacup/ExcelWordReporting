@@ -1,8 +1,8 @@
 package com.echoinacup.main;
 
-import com.echoinacup.excel.ExcelHandler;
-import com.echoinacup.file.FileService;
-import com.echoinacup.word.WordHandler;
+import com.echoinacup.service.excel.ExcelHandler;
+import com.echoinacup.service.file.FileService;
+import com.echoinacup.service.word.WordHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

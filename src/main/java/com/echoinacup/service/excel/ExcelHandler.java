@@ -1,7 +1,7 @@
-package com.echoinacup.excel;
+package com.echoinacup.service.excel;
 
-import com.echoinacup.entities.Company;
-import com.echoinacup.file.FileService;
+import com.echoinacup.domain.Company;
+import com.echoinacup.service.file.FileService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -22,11 +22,15 @@ import java.util.Map;
 
 public class ExcelHandler {
 
-    private FileService fileService;
+
+    private static final String pathToExcelTemplate = "templates/excel/test_example.xlsx";
     private static MissingCellPolicy xRow;
     private static final int BASIC_INFO_SHEET = 1;
     private static final int SUBS_SOURCES_SHEET = 2;
     private static final String dataSourcesHeader = "DATA SOURCES (COMPANY WEBSITE, COMPANY PROFILE IN STOCK EXCHANGE, NEWS ARTICLES OR OTHER): LINKS (HTTP://…)";
+
+
+    private FileService fileService;
 
     @Autowired
     public void setFileService(FileService fileService) {
@@ -36,7 +40,7 @@ public class ExcelHandler {
 
     public void processExcelTemplateSub() { //Pass List of companies from the first sheet
         List<Map<String, Object>> allCompanies = new ArrayList<>();
-        File file = fileService.readFile();
+        File file = fileService.readFile(pathToExcelTemplate);
         List<Company> companies = new ArrayList<>();
 
         try {
@@ -126,13 +130,14 @@ public class ExcelHandler {
             System.out.println(e.getMessage());
         }
 
-
     }
 
 
     public void processExcelBasicInfoSheet() {
+        //TODO create Company Object per each
+
         List<Map<String, Object>> allCompanies = new ArrayList<>();
-        File file = fileService.readFile();
+        File file = fileService.readFile(pathToExcelTemplate);
         Map<String, String> headerMap = new LinkedHashMap<>();
 
         try {

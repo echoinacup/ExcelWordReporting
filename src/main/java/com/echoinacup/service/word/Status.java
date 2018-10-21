@@ -1,4 +1,4 @@
-package com.echoinacup.word;
+package com.echoinacup.service.word;
 
 
 public enum Status {

@@ -1,6 +1,6 @@
-package com.echoinacup.entities;
+package com.echoinacup.domain;
 
-import com.echoinacup.word.Status;
+import com.echoinacup.service.word.Status;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,7 +34,11 @@ public class Company {
     private String contactEmail;
     private String website;
     private String companyAddress;
-    private Map<String, String> socialMedia = new LinkedHashMap<>();
+    private String linkedIn;
+    private String twitter;
+    private String facebook;
+    private String instagram;
+
 
     private List<List<String>> subsidiaries = new ArrayList<>(); // 4 each Set od data
     private List<List<String>> activities = new ArrayList<>();
