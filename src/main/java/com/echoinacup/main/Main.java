@@ -1,11 +1,14 @@
 package com.echoinacup.main;
 
+import com.echoinacup.domain.Company;
 import com.echoinacup.service.excel.ExcelHandler;
 import com.echoinacup.service.word.WordHandler;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -40,8 +43,12 @@ public class Main { //} extends Application {
 //
 //        wordHandler.processWordTemplate(map);
 
-//        excelHandler.processExcelTemplateSub();
-        excelHandler.processExcelBasicInfoSheet();
+//        List<Company> companies = new ArrayList<>();
+        List<Company> companies = excelHandler.processExcelBasicInfoSheet();
+        List<Company> list = excelHandler.processExcelTemplateSub(companies);
+
+        list.forEach(item -> wordHandler.processWordTemplate(item));
+
 //        launch(args);
 
     }

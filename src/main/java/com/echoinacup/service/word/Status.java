@@ -3,19 +3,19 @@ package com.echoinacup.service.word;
 
 public enum Status {
 
-    PUBLIC {
-        @Override
-        public String asNormalTitle() {
-            return "Public";
-        }
-    },
-    PRIVATE {
-        @Override
-        public String asNormalTitle() {
-            return "Private";
-        }
-    };
+    PUBLIC("Public"),
 
-    public abstract String asNormalTitle();
+    PRIVATE("Private");
+
+    private String status;
+
+    Status(String status) {
+        this.status = status;
+    }
+
+    public String status() {
+        return status;
+    }
+
 
 }

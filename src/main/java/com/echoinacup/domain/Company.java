@@ -3,32 +3,27 @@ package com.echoinacup.domain;
 import com.echoinacup.service.word.Status;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
-import java.math.BigInteger;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
 public class Company {
 
-
-    private String companyName;
     private String corporateName;
-    private BigInteger paidupCapital;
+    private String paidupCapital;
     private String shareParValue;
-    private BigInteger numberOfShares;
+    private String numberOfShares;
     private String legalStructure;
     private String currency;
-    private LocalDate inceptionDate;
+    private String inceptionDate;
     private String sector;
     private String country;
     private Status status;
-    private int numberOfEmployees;
-    private LocalDate listingDate;
+    private String numberOfEmployees;
+    private String listingDate;
     private String stockExchangeName;
     private String phone;
     private String contactEmail;
@@ -40,15 +35,50 @@ public class Company {
     private String instagram;
 
 
-    private List<List<String>> subsidiaries = new ArrayList<>(); // 4 each Set od data
-    private List<List<String>> activities = new ArrayList<>();
+    private List<String> subsidiaries = new ArrayList<>(); // 4 each Set od data
+    private List<String> activities = new ArrayList<>();
     private List<String> dataSources = new ArrayList<>();
 
-
-    public Company() {
+    public void setStatus(String strStatus) {
+        if (StringUtils.isNotEmpty(strStatus)) {
+            this.status = Status.valueOf(strStatus.toUpperCase());
+        }
+        this.status = Status.PUBLIC; //By default
     }
 
-    public Company(String companyName) {
-        this.companyName = companyName;
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "Company{" +
+                "  corporateName='" + corporateName + '\'' +
+                ", paidupCapital='" + paidupCapital + '\'' +
+                ", shareParValue='" + shareParValue + '\'' +
+                ", numberOfShares='" + numberOfShares + '\'' +
+                ", legalStructure='" + legalStructure + '\'' +
+                ", currency='" + currency + '\'' +
+                ", inceptionDate='" + inceptionDate + '\'' +
+                ", sector='" + sector + '\'' +
+                ", country='" + country + '\'' +
+                ", status=" + status +
+                ", numberOfEmployees='" + numberOfEmployees + '\'' +
+                ", listingDate='" + listingDate + '\'' +
+                ", stockExchangeName='" + stockExchangeName + '\'' +
+                ", phone='" + phone + '\'' +
+                ", contactEmail='" + contactEmail + '\'' +
+                ", website='" + website + '\'' +
+                ", companyAddress='" + companyAddress + '\'' +
+                ", linkedIn='" + linkedIn + '\'' +
+                ", twitter='" + twitter + '\'' +
+                ", facebook='" + facebook + '\'' +
+                ", instagram='" + instagram + '\'' +
+                ", subsidiaries=" + subsidiaries +
+                ", activities=" + activities +
+                ", dataSources=" + dataSources +
+                '}';
     }
 }
