@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,28 +37,6 @@ public class WordHandler {
         try {
             resultReport = new XWPFDocument(OPCPackage.open(file));
 
-//            List<XWPFParagraph> paragraphs = resultReport.getParagraphs();
-//
-//            List<XWPFTable> l = resultReport.getTables();
-//
-//            for (XWPFTable tbl : resultReport.getTables()) {
-//                for (XWPFTableRow row : tbl.getRows()) {
-//                    for (XWPFTableCell cell : row.getTableCells()) {
-//                        for (XWPFParagraph p : cell.getParagraphs()) {
-//                            for (XWPFRun r : p.getRuns()) {
-//                                String text = r.getText(0);
-//                                System.out.println(text);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-
-
-//            for (XWPFParagraph para : paragraphs) {
-//                System.out.println(para.getText());
-//            }
-
             replacePlaceHolder(resultReport, placeholderMap);
 
         } catch (IOException | InvalidFormatException e) {
@@ -74,10 +51,10 @@ public class WordHandler {
         XWPFDocument resultReport = xwpfDocument;
         FileOutputStream out = new FileOutputStream(new File("output.docx")); //TODO set the name of the file name
 
-        for (String placeHolderKey : placeholderMap.keySet()) {
+        for (Map.Entry<String,String> entry: placeholderMap.entrySet()) {
 
-            String placeHolder = placeHolderKey;
-            String replacement = placeholderMap.get(placeHolderKey);
+            String placeHolder = entry.getKey();
+            String replacement = entry.getValue();
 
             for (XWPFParagraph p : resultReport.getParagraphs()) {
                 List<XWPFRun> runs = p.getRuns();
