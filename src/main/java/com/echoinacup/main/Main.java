@@ -23,43 +23,47 @@ import java.util.Map;
 import static javafx.application.Application.launch;
 
 
-public class Main {// extends Application  {
+public class Main extends Application  {
 
-//    @Override
-//    public void start(Stage primaryStage) throws Exception {
-//
-//        Parent root = FXMLLoader.load(getClass().getResource("/ui_layout.fxml"));
-//        primaryStage.setTitle("Excel processor");
-//
-//
-//        FileChooser fileChooser = new FileChooser();
-//
-//        Button button = new Button("Select File");
-//
-//        button.setOnAction(e -> {
-//            File file = fileChooser.showOpenDialog(primaryStage);
-//
-//        });
-//
-//        VBox vBox = new VBox(button);
-//        primaryStage.setScene(new Scene(vBox, 200, 200));
-//        primaryStage.show();
-//    }
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+
+    ApplicationContext context = new AnnotationConfigApplicationContext(MainConfiguration.class);
+    ExcelHandler excelHandler = context.getBean(ExcelHandler.class);
+    WordHandler wordHandler = context.getBean(WordHandler.class);
 
 
-    public static void main(String[] args) {
-        ApplicationContext context = new AnnotationConfigApplicationContext(MainConfiguration.class);
-        ExcelHandler excelHandler = context.getBean(ExcelHandler.class);
-        WordHandler wordHandler = context.getBean(WordHandler.class);
 
 
-//        List<Company> companies = new ArrayList<>();
-        List<Company> companies = excelHandler.processExcelBasicInfoSheet();
-        List<Company> list = excelHandler.processExcelTemplateSub(companies);
+        Parent root = FXMLLoader.load(getClass().getResource("/ui_layout.fxml"));
+        primaryStage.setTitle("Excel processor");
 
-        list.forEach(item -> wordHandler.processWordTemplate(item));
 
-//        launch(args);
+        FileChooser fileChooser = new FileChooser();
 
+        Button button = new Button("Select File");
+
+        button.setOnAction(e -> {
+           File file = fileChooser.showOpenDialog(primaryStage);
+            List<Company> companies = excelHandler.processExcelBasicInfoSheet(file);
+            List<Company> list = excelHandler.processExcelTemplateSub(companies);
+
+            list.forEach(item -> wordHandler.processWordTemplate(item));
+        });
+
+
+
+
+        VBox vBox = new VBox(button);
+        primaryStage.setScene(new Scene(vBox, 200, 200));
+        primaryStage.show();
     }
-}
+
+
+    public static void main(String[] args){
+
+
+            launch(args);
+        }
+    }
+

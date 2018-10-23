@@ -38,8 +38,8 @@ public class ExcelHandler {
     }
 
     //TODO handle shit in other rows!!!!
-    public List<Company> processExcelBasicInfoSheet() {
-        File file = fileService.readFile(pathToExcelTemplate);
+    public List<Company> processExcelBasicInfoSheet(File file) {
+       // File file = fileService.readFile(pathToExcelTemplate);
         List<Company> companies = new ArrayList<>();
         Map<String, String> headerMap = new LinkedHashMap<>();
 
