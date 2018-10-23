@@ -2,6 +2,7 @@ package com.echoinacup.service.word;
 
 import com.echoinacup.domain.Company;
 import com.echoinacup.service.file.FileService;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.*;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 public class WordHandler {
+
 
     private final static Logger LOGGER = Logger.getLogger(WordHandler.class.getName());
 
@@ -51,7 +53,7 @@ public class WordHandler {
         XWPFDocument resultReport = xwpfDocument;
         FileOutputStream out = new FileOutputStream(new File("output.docx")); //TODO set the name of the file name
 
-        for (Map.Entry<String,String> entry: placeholderMap.entrySet()) {
+        for (Map.Entry<String, String> entry : placeholderMap.entrySet()) {
 
             String placeHolder = entry.getKey();
             String replacement = entry.getValue();
@@ -120,7 +122,50 @@ public class WordHandler {
         placholdeMap.put("fb", company.getFacebook());
         placholdeMap.put("inst", company.getInstagram());
 
+        String desc = fillDescription(company.getStatus(),
+                company.getInceptionDate(),
+                company.getCity(),
+                company.getCountry(),
+                company.getCorporateName(),
+                company.getLegalStructure(),
+                company.getSector(),
+                company.getProductsServicesOffered(),
+                company.getDetailsOfServicesOffered(),
+                company.getStockExchangeName(),
+                company.getListingDate());
+        placholdeMap.put("desc", desc);
+
         return placholdeMap;
+
+    }
+
+
+    private String fillDescription(Status status,
+                                   String inceptionDate,
+                                   String city,
+                                   String country,
+                                   String corporateName,
+                                   String legalStructure,
+                                   String sector,
+                                   String productsServicesOffered,
+                                   String detailsOfServicesOffered,
+                                   String stockExchangeName,
+                                   String listingDate) {
+
+        String publicDescription = "Incorporated in " + inceptionDate +
+                " with headquarters in " + city + ", " + country + ". " + corporateName + " is a " + legalStructure + " company " +
+                "operating within the " + sector + "." +
+                " The company is engaged in " + productsServicesOffered + ". The Company provides " + detailsOfServicesOffered + "." +
+                " The company has investments and subsidiaries operating in Country, Country, Country and Country." +
+                " " + corporateName + " is a public company listed on the " + stockExchangeName + " since " + listingDate + ".";
+
+        String privateDescription = "Incorporated in " + inceptionDate +
+                " with headquarters in " + city + ", " + country + ". " + corporateName + " is a " + legalStructure + " company operating" +
+                " within the " + sector + "." +
+                " The company is engaged in " + productsServicesOffered + ". The Company provides " + detailsOfServicesOffered + " . " +
+                " The company has investments and subsidiaries operating in Country, Country, Country and Country." +
+                "  " + corporateName + " is a private company.";
+        return status == Status.PUBLIC ? publicDescription : privateDescription;
 
     }
 

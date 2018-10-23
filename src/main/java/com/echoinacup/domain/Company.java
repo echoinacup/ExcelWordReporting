@@ -20,6 +20,8 @@ public class Company {
     private String currency;
     private String inceptionDate;
     private String sector;
+    private String productsServicesOffered;
+    private String detailsOfServicesOffered;
     private String city;
     private String country;
     private Status status;
@@ -35,6 +37,7 @@ public class Company {
     private String twitter;
     private String facebook;
     private String instagram;
+    private String description;
 
 
     private List<String> subsidiaries = new ArrayList<>(); // 4 each Set od data
@@ -51,5 +54,17 @@ public class Company {
     public void setStatus(Status status) {
         this.status = status;
     }
+
+
+
+
+    //    private populateDescription(Company company) {
+//        String desc = "";
+//        if (company.getStatus() == Status.PUBLIC) {
+//            desc =
+//        }
+//
+//        company.setDescription( ? privateDescription : privateDescription);
+//    }
 
 }
