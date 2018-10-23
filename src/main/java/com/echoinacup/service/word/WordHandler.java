@@ -74,7 +74,8 @@ public class WordHandler {
     private void replacePlaceHolder(XWPFDocument xwpfDocument, Map<String, String> placeholderMap, Company company) throws
             FileNotFoundException {
         XWPFDocument resultReport = xwpfDocument;
-        FileOutputStream out = new FileOutputStream(new File("output.docx")); //TODO set the name of the file name
+        String name = company.getCorporateName().isEmpty() ? "": company.getCorporateName();
+        FileOutputStream out = new FileOutputStream(new File(name+" report.docx")); //TODO set the name of the file name
 
         for (Map.Entry<String, String> entry : placeholderMap.entrySet()) {
 
