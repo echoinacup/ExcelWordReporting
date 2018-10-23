@@ -20,11 +20,13 @@ public class Company {
     private String currency;
     private String inceptionDate;
     private String sector;
+    private String city;
     private String country;
     private Status status;
     private String numberOfEmployees;
     private String listingDate;
     private String stockExchangeName;
+    private String linkToExchange;
     private String phone;
     private String contactEmail;
     private String website;
@@ -50,35 +52,4 @@ public class Company {
         this.status = status;
     }
 
-
-
-    @Override
-    public String toString() {
-        return "Company{" +
-                "  corporateName='" + corporateName + '\'' +
-                ", paidupCapital='" + paidupCapital + '\'' +
-                ", shareParValue='" + shareParValue + '\'' +
-                ", numberOfShares='" + numberOfShares + '\'' +
-                ", legalStructure='" + legalStructure + '\'' +
-                ", currency='" + currency + '\'' +
-                ", inceptionDate='" + inceptionDate + '\'' +
-                ", sector='" + sector + '\'' +
-                ", country='" + country + '\'' +
-                ", status=" + status +
-                ", numberOfEmployees='" + numberOfEmployees + '\'' +
-                ", listingDate='" + listingDate + '\'' +
-                ", stockExchangeName='" + stockExchangeName + '\'' +
-                ", phone='" + phone + '\'' +
-                ", contactEmail='" + contactEmail + '\'' +
-                ", website='" + website + '\'' +
-                ", companyAddress='" + companyAddress + '\'' +
-                ", linkedIn='" + linkedIn + '\'' +
-                ", twitter='" + twitter + '\'' +
-                ", facebook='" + facebook + '\'' +
-                ", instagram='" + instagram + '\'' +
-                ", subsidiaries=" + subsidiaries +
-                ", activities=" + activities +
-                ", dataSources=" + dataSources +
-                '}';
-    }
 }

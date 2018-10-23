@@ -18,10 +18,12 @@ public class HelpUtils {
     public static final String keyOffered = "PRODUCTS/SERVICES OFFERED";
     public static final String keyDetailsOffered = "DETAILS OF SERVICES OFFERED";
     public static final String keyCountry = "COUNTRY";
+    public static final String keyCity = "CITY";
     public static final String keyStatus = "STATUS (PUBLIC OR PRIVATE)";
     public static final String keyNumberOfEmployees = "NUMBER OF EMPLOYEES";
     public static final String keyListingDate = "LISTING DATE";
     public static final String keyStockName = "STOCK EXCHANGE NAME";
+    public static final String keyLinkToStock = "LINK TO PROFILE AT STOCK EXCHANGE";
     public static final String keyPhone = "PHONE";
     public static final String keyEmail = "CONTACT EMAIL";
     public static final String keyWebsite = "WEBSITE";

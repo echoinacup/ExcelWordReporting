@@ -194,7 +194,7 @@ public class ExcelHandler {
     }
 
     private void fillInDescriptionMapWithKeys(XSSFRow r, Map<String, String> headerMap) {
-        for (int i = 0; i < 27; i++) {
+        for (int i = 0; i < 29; i++) {
             Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
             String value = cell.getStringCellValue();
             if (StringUtils.isNotEmpty(value)) {
@@ -249,11 +249,13 @@ public class ExcelHandler {
         company.setCurrency(valueMap.get(keyCurrencySortCut));
         company.setInceptionDate(valueMap.get(keyInceptionDate));
         company.setSector(valueMap.get(keySector));
+        company.setCity(valueMap.get(keyCity));
         company.setCountry(valueMap.get(keyCountry));
         company.setStatus(valueMap.get(keyStatus));
         company.setNumberOfEmployees(valueMap.get(keyNumberOfEmployees));
         company.setListingDate(valueMap.get(keyListingDate));
         company.setStockExchangeName(valueMap.get(keyStockName));
+        company.setLinkToExchange(valueMap.get(keyLinkToStock));
         company.setPhone(valueMap.get(keyPhone));
         company.setContactEmail(valueMap.get(keyEmail));
         company.setWebsite(valueMap.get(keyWebsite));

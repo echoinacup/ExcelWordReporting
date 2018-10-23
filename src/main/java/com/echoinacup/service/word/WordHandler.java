@@ -110,6 +110,7 @@ public class WordHandler {
         placholdeMap.put("numOfEmpl", company.getNumberOfEmployees());
         placholdeMap.put("listingDate", company.getListingDate());
         placholdeMap.put("exchange", company.getStockExchangeName());
+        placholdeMap.put("linkToStockProfile", company.getLinkToExchange());
         placholdeMap.put("phone", company.getPhone());
         placholdeMap.put("email", company.getContactEmail());
         placholdeMap.put("website", company.getWebsite());
