@@ -2,10 +2,12 @@ package com.echoinacup.service.word;
 
 import com.echoinacup.domain.Company;
 import com.echoinacup.service.file.FileService;
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.collect.Lists;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.*;
+import org.apache.xmlbeans.XmlException;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRow;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
@@ -39,16 +41,37 @@ public class WordHandler {
         try {
             resultReport = new XWPFDocument(OPCPackage.open(file));
 
-            replacePlaceHolder(resultReport, placeholderMap);
+            replacePlaceHolder(resultReport, placeholderMap, company);
 
         } catch (IOException | InvalidFormatException e) {
             LOGGER.info(e.getMessage());
         }
-
-
     }
 
-    private void replacePlaceHolder(XWPFDocument xwpfDocument, Map<String, String> placeholderMap) throws
+
+    private void addRowsToSubTable(XWPFTable tbl, List<List<String>> subSets) {
+        XWPFTableRow rowTemplate = tbl.getRow(1);
+        XWPFTableRow oldRow = rowTemplate;
+        CTRow ctrow = null;
+        try {
+            ctrow = CTRow.Factory.parse(oldRow.getCtRow().newInputStream());
+
+        } catch (XmlException | IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+        for (List<String> subSet : subSets) {
+            XWPFTableRow newRow = new XWPFTableRow(ctrow, tbl);
+            for (int i = 0; i < subSet.size(); i++) {
+                newRow.getCell(i).setText(subSet.get(i));
+            }
+            tbl.addRow(newRow);
+
+        }
+        tbl.removeRow(1);
+    }
+
+    private void replacePlaceHolder(XWPFDocument xwpfDocument, Map<String, String> placeholderMap, Company company) throws
             FileNotFoundException {
         XWPFDocument resultReport = xwpfDocument;
         FileOutputStream out = new FileOutputStream(new File("output.docx")); //TODO set the name of the file name
@@ -87,6 +110,16 @@ public class WordHandler {
             }
         }
         try {
+            XWPFTable tableSub = resultReport.getTables().get(1);
+            XWPFTable tableActivities = resultReport.getTables().get(2);
+            XWPFTable tableDataSource = resultReport.getTables().get(3);
+            List<List<String>> subSets = Lists.partition(company.getSubsidiaries(), 4);
+            List<List<String>> subSetsActivity = Lists.partition(company.getActivities(), 3);
+            List<List<String>> subSetsDataSources = Lists.partition(company.getDataSources(), 1);
+            addRowsToSubTable(tableSub, subSets);
+            addRowsToSubTable(tableActivities, subSetsActivity);
+            addRowsToSubTable(tableDataSource, subSetsDataSources);
+
             resultReport.write(out);
             out.close();
 
@@ -94,7 +127,6 @@ public class WordHandler {
             LOGGER.info(e.getMessage());
         }
     }
-
 
     private Map<String, String> companyToWordTransformator(Company company) {
         Map<String, String> placholdeMap = new LinkedHashMap<>();

@@ -1,6 +1,8 @@
 package com.echoinacup.main;
 
 import com.echoinacup.service.word.Status;
+import com.google.common.collect.Lists;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
@@ -51,8 +53,17 @@ public class TestMethods {
 
     @Test
     public void checkUtils() {
+        List<Integer> intList = Lists.newArrayList(1, 2, 3, 4, 5, 6, 7, 8);
+        List<String> list = Arrays.asList("Arab National Bank", "Arab National Bank", "Arab National Bank",
+                "Arab National Bank", "Test", "Test", "Test", "SHit", "SHit", "SHit");
+        List<List<String>> subSets = Lists.partition(list, 4);
 
-        assertEquals(false, StringUtils.isNotEmpty(null));
+        subSets.forEach(sub-> System.out.println(sub));
+
+//        List<Integer> lastPartition = subSets.get(1);
+//        List<Integer> expectedLastPartition = Lists.newArrayList(1,23, 4);
+//        assertEquals(subSets.size(), 4);
+//        assertEquals(lastPartition, expectedLastPartition);
     }
 
 

@@ -21,6 +21,7 @@
 *.rar
 
 .idea
+.iml
 
 .classpath
 .project

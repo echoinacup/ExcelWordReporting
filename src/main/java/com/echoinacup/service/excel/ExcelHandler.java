@@ -112,8 +112,6 @@ public class ExcelHandler {
                 resultList.add(c);
             }
 
-            resultList.forEach(i -> System.out.println(i));
-
         } catch (IOException | InvalidFormatException e) {
             System.out.println(e.getMessage());
         }
@@ -133,7 +131,7 @@ public class ExcelHandler {
             if (handleEmptyRow(r)) continue;
 
 
-            for (int i = 1; i < r.getLastCellNum(); i++) {
+            for (int i = 2; i < r.getLastCellNum(); i++) {
                 Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
                 String str = getCellValueAsString(cell);
 
