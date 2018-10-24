@@ -78,7 +78,7 @@ public class WordHandler {
             FileNotFoundException {
         XWPFDocument resultReport = xwpfDocument;
         String name = company.getCorporateName().isEmpty() ? "" : company.getCorporateName();
-        FileOutputStream out = new FileOutputStream(new File(path + "/" + name + " report.docx")); //TODO set the name of the file name
+        FileOutputStream out = new FileOutputStream(new File(path + File.separator + name + " report.docx")); //TODO set the name of the file name
 
         for (Map.Entry<String, String> entry : placeholderMap.entrySet()) {
 
