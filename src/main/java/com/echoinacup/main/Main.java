@@ -8,6 +8,8 @@ import java.io.File;
 import com.echoinacup.service.excel.ExcelHandler;
 import com.echoinacup.service.word.WordHandler;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -34,14 +36,20 @@ public class Main extends Application {
             File file = chooser.showOpenDialog(primaryStage);
             if (file != null) {
                 String fileAsString = file.toString();
-
-                chosen.setText("Chosen: " + fileAsString);
+                chosen.setText(fileAsString);
             } else {
                 chosen.setText(null);
             }
         });
 
         VBox layout = new VBox(10, button, chosen);
+        chosen.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
+                System.out.println(chosen.getText());
+            }
+        });
+        System.out.println(chosen.getText());
         layout.setMinWidth(400);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(10));
