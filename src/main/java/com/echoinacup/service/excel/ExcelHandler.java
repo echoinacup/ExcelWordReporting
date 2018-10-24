@@ -37,9 +37,7 @@ public class ExcelHandler {
         this.fileService = fileService;
     }
 
-    //TODO handle shit in other rows!!!!
     public List<Company> processExcelBasicInfoSheet(File file) {
-        // File file = fileService.readFile(pathToExcelTemplate);
         List<Company> companies = new ArrayList<>();
         Map<String, String> headerMap = new LinkedHashMap<>();
 
@@ -88,7 +86,6 @@ public class ExcelHandler {
 
 
     public List<Company> processExcelTemplateSub(List<Company> allCompanies, File file) { //Pass List of companies from the first sheet
-//        File file = fileService.readFile(pathToExcelTemplate);
         List<Company> resultList = new ArrayList<>();
         try {
             XSSFWorkbook workbook = new XSSFWorkbook(file);
