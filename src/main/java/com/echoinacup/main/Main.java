@@ -1,69 +1,60 @@
 package com.echoinacup.main;
 
 import com.echoinacup.domain.Company;
+
+
+import java.io.File;
+
 import com.echoinacup.service.excel.ExcelHandler;
 import com.echoinacup.service.word.WordHandler;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+import javafx.geometry.*;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import static javafx.application.Application.launch;
-
-
-public class Main extends Application  {
+public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-    ApplicationContext context = new AnnotationConfigApplicationContext(MainConfiguration.class);
-    ExcelHandler excelHandler = context.getBean(ExcelHandler.class);
-    WordHandler wordHandler = context.getBean(WordHandler.class);
+        ApplicationContext context = new AnnotationConfigApplicationContext(MainConfiguration.class);
+        ExcelHandler excelHandler = context.getBean(ExcelHandler.class);
+        WordHandler wordHandler = context.getBean(WordHandler.class);
 
+        Button button = new Button("Choose");
+        Label chosen = new Label();
+        button.setOnAction(event -> {
+            FileChooser chooser = new FileChooser();
+            File file = chooser.showOpenDialog(primaryStage);
+            if (file != null) {
+                String fileAsString = file.toString();
 
-
-
-        Parent root = FXMLLoader.load(getClass().getResource("/ui_layout.fxml"));
-        primaryStage.setTitle("Excel processor");
-
-
-        FileChooser fileChooser = new FileChooser();
-
-        Button button = new Button("Select File");
-
-        button.setOnAction(e -> {
-           File file = fileChooser.showOpenDialog(primaryStage);
-            List<Company> companies = excelHandler.processExcelBasicInfoSheet(file);
-            List<Company> list = excelHandler.processExcelTemplateSub(companies);
-
-            list.forEach(item -> wordHandler.processWordTemplate(item));
+                chosen.setText("Chosen: " + fileAsString);
+            } else {
+                chosen.setText(null);
+            }
         });
 
-
-
-
-        VBox vBox = new VBox(button);
-        primaryStage.setScene(new Scene(vBox, 200, 200));
+        VBox layout = new VBox(10, button, chosen);
+        layout.setMinWidth(400);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(10));
+        primaryStage.setScene(new Scene(layout));
         primaryStage.show();
+
     }
 
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
 
-            launch(args);
-        }
+        launch(args);
     }
+}
 
