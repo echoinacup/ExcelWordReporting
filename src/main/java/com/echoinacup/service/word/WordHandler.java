@@ -33,7 +33,7 @@ public class WordHandler {
     }
 
 
-    public void processWordTemplate(Company company) {
+    public void processWordTemplate(Company company, String parentPath) {
 
         File file = fileService.readFile(pathToWordTemplate);
         XWPFDocument resultReport;
@@ -41,7 +41,7 @@ public class WordHandler {
         try {
             resultReport = new XWPFDocument(OPCPackage.open(file));
 
-            replacePlaceHolder(resultReport, placeholderMap, company);
+            replacePlaceHolder(resultReport, placeholderMap, company, parentPath);
 
         } catch (IOException | InvalidFormatException e) {
             LOGGER.info(e.getMessage());
@@ -71,11 +71,14 @@ public class WordHandler {
         tbl.removeRow(1);
     }
 
-    private void replacePlaceHolder(XWPFDocument xwpfDocument, Map<String, String> placeholderMap, Company company) throws
+    private XWPFDocument replacePlaceHolder(XWPFDocument xwpfDocument,
+                                            Map<String, String> placeholderMap,
+                                            Company company,
+                                            String path) throws
             FileNotFoundException {
         XWPFDocument resultReport = xwpfDocument;
-        String name = company.getCorporateName().isEmpty() ? "": company.getCorporateName();
-        FileOutputStream out = new FileOutputStream(new File(name+" report.docx")); //TODO set the name of the file name
+        String name = company.getCorporateName().isEmpty() ? "" : company.getCorporateName();
+        FileOutputStream out = new FileOutputStream(new File(path + "/" + name + " report.docx")); //TODO set the name of the file name
 
         for (Map.Entry<String, String> entry : placeholderMap.entrySet()) {
 
@@ -127,6 +130,7 @@ public class WordHandler {
         } catch (IOException e) {
             LOGGER.info(e.getMessage());
         }
+        return resultReport;
     }
 
     private Map<String, String> companyToWordTransformator(Company company) {
