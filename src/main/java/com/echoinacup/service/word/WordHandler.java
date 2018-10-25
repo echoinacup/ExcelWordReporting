@@ -24,7 +24,8 @@ public class WordHandler {
 
     private final static Logger LOGGER = Logger.getLogger(WordHandler.class.getName());
 
-    private static final String pathToWordTemplate = "templates/word/word_template.docx";
+    private final static String separator = File.separator;
+    private static final String pathToWordTemplate = "templates"+separator+"word"+separator+"word_template.docx";
     private FileService fileService;
 
     @Autowired
@@ -78,7 +79,7 @@ public class WordHandler {
             FileNotFoundException {
         XWPFDocument resultReport = xwpfDocument;
         String name = company.getCorporateName().isEmpty() ? "" : company.getCorporateName();
-        FileOutputStream out = new FileOutputStream(new File(path + File.separator + name + " report.docx")); //TODO set the name of the file name
+        FileOutputStream out = new FileOutputStream(new File(path + separator + name + " report.docx")); //TODO set the name of the file name
 
         for (Map.Entry<String, String> entry : placeholderMap.entrySet()) {
 
