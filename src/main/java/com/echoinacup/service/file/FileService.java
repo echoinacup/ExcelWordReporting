@@ -3,20 +3,17 @@ package com.echoinacup.service.file;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 
 @Component
 public class FileService {
 
-    public File readFile(String path) {
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file = null;
-        try {
-            file = new File(classLoader.getResource(path).toURI());
-        } catch (URISyntaxException e) {
-            System.out.println(e.getMessage());
-        }
+    private static final String path = "templates/word/word_template.docx";
 
-        return file;
+    public InputStream readFile() {
+        ClassLoader classLoader = getClass().getClassLoader();
+        InputStream is = classLoader.getResourceAsStream(path);
+        return is;
     }
 }

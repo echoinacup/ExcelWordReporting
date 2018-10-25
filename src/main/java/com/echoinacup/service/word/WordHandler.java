@@ -24,8 +24,6 @@ public class WordHandler {
 
     private final static Logger LOGGER = Logger.getLogger(WordHandler.class.getName());
 
-    private final static String separator = File.separator;
-    private static final String pathToWordTemplate = "templates"+separator+"word"+separator+"word_template.docx";
     private FileService fileService;
 
     @Autowired
@@ -36,15 +34,14 @@ public class WordHandler {
 
     public void processWordTemplate(Company company, String parentPath) {
 
-        File file = fileService.readFile(pathToWordTemplate);
         XWPFDocument resultReport;
         Map<String, String> placeholderMap = companyToWordTransformator(company);
         try {
-            resultReport = new XWPFDocument(OPCPackage.open(file));
+            resultReport = new XWPFDocument(fileService.readFile());
 
             replacePlaceHolder(resultReport, placeholderMap, company, parentPath);
 
-        } catch (IOException | InvalidFormatException e) {
+        } catch (IOException e) {
             LOGGER.info(e.getMessage());
         }
     }
@@ -79,7 +76,7 @@ public class WordHandler {
             FileNotFoundException {
         XWPFDocument resultReport = xwpfDocument;
         String name = company.getCorporateName().isEmpty() ? "" : company.getCorporateName();
-        FileOutputStream out = new FileOutputStream(new File(path + separator + name + " report.docx")); //TODO set the name of the file name
+        FileOutputStream out = new FileOutputStream(new File(path + File.separator + name + " report.docx")); //TODO set the name of the file name
 
         for (Map.Entry<String, String> entry : placeholderMap.entrySet()) {
 
