@@ -12,9 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static com.echoinacup.utils.HelpUtils.formatString;
@@ -166,7 +164,9 @@ public class WordHandler {
                 company.getProductsServicesOffered(),
                 company.getDetailsOfServicesOffered(),
                 company.getStockExchangeName(),
-                company.getListingDate());
+                company.getListingDate(),
+                company.getSubsidiaries()
+        );
         placeholderMap.put("desc", desc);
 
         return placeholderMap;
@@ -184,23 +184,43 @@ public class WordHandler {
                                    String productsServicesOffered,
                                    String detailsOfServicesOffered,
                                    String stockExchangeName,
-                                   String listingDate) {
+                                   String listingDate,
+                                   List<String> subsidiaries) {
+
 
         String publicDescription = "Incorporated in " + inceptionDate +
-                " with headquarters in " + city + ", " + country + ". " + corporateName + " is a " + legalStructure + " company " +
+                " with headquarters in " + city + ", " + country + ". " + corporateName + " is a " + legalStructure + "company " +
                 "operating within the " + sector + "." +
-                " The company is engaged in " + productsServicesOffered + ". The Company provides " + detailsOfServicesOffered + "." +
-                " The company has investments and subsidiaries operating in Country, Country, Country and Country." +
+                " The company is engaged in " + productsServicesOffered + ". The Company provides " + cutExtraDescForDetails(detailsOfServicesOffered) + "." +
+                " The company has investments and subsidiaries operating in " + insertSubsidiaries(subsidiaries) + "." +
                 " " + corporateName + " is a public company listed on the " + stockExchangeName + " since " + listingDate + ".";
 
         String privateDescription = "Incorporated in " + inceptionDate +
-                " with headquarters in " + city + ", " + country + ". " + corporateName + " is a " + legalStructure + " company operating" +
+                " with headquarters in " + city + ", " + country + ". " + corporateName + " is a " + legalStructure + "company operating" +
                 " within the " + sector + "." +
-                " The company is engaged in " + productsServicesOffered + ". The Company provides " + detailsOfServicesOffered + " . " +
-                " The company has investments and subsidiaries operating in Country, Country, Country and Country." +
+                " The company is engaged in " + productsServicesOffered + ". The Company provides " + cutExtraDescForDetails(detailsOfServicesOffered) + " . " +
+                " The company has investments and subsidiaries operating in " + insertSubsidiaries(subsidiaries) + "." +
                 "  " + corporateName + " is a private company.";
         return status == Status.PUBLIC ? publicDescription : privateDescription;
+    }
 
+    private String cutExtraDescForDetails(String detailsOfServicesOffered) {
+        String extraProvides = "provides";
+        String resDetailsOfServices;
+        if (detailsOfServicesOffered.contains(extraProvides)) {
+            resDetailsOfServices = detailsOfServicesOffered.replace(extraProvides, "").trim();
+            return resDetailsOfServices;
+        }
+        return detailsOfServicesOffered;
+    }
+
+    private String insertSubsidiaries(List<String> subs) {
+        List<List<String>> subSets = Lists.partition(subs, 4);
+        Set<String> set = new HashSet<>();
+        for (List<String> subSet : subSets) {
+            set.add(subSet.get(3)); //TODO probably regex
+        }
+        return String.join(", ", set);
     }
 
 

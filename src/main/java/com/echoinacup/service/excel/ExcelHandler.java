@@ -244,6 +244,8 @@ public class ExcelHandler {
         company.setCurrency(valueMap.get(keyCurrencySortCut));
         company.setInceptionDate(valueMap.get(keyInceptionDate));
         company.setSector(valueMap.get(keySector));
+        company.setProductsServicesOffered(valueMap.get(keyOffered));
+        company.setDetailsOfServicesOffered(valueMap.get(keyDetailsOffered));
         company.setCity(valueMap.get(keyCity));
         company.setCountry(valueMap.get(keyCountry));
         company.setStatus(valueMap.get(keyStatus));

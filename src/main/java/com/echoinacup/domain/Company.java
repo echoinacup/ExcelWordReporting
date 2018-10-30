@@ -55,16 +55,4 @@ public class Company {
         this.status = status;
     }
 
-
-
-
-    //    private populateDescription(Company company) {
-//        String desc = "";
-//        if (company.getStatus() == Status.PUBLIC) {
-//            desc =
-//        }
-//
-//        company.setDescription( ? privateDescription : privateDescription);
-//    }
-
 }
