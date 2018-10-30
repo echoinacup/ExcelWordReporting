@@ -216,7 +216,7 @@ public class ExcelHandler {
                         strCellValue = dateFormat.format(cell.getDateCellValue());
                     } else if (cell.getCellStyle().getDataFormatString().contains("%")) {
                         Double value = cell.getNumericCellValue() * 100;
-                        strCellValue = value.toString() + "%";
+                        strCellValue = new String(value.toString() + "%");
                     } else {
                         Double value = cell.getNumericCellValue();
                         Long longValue = value.longValue();

@@ -48,21 +48,17 @@ public class Main extends Application {
 
 
         VBox layout = new VBox(10, button, chosen, resultDir);
-        chosen.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
+        chosen.textProperty().addListener((ov, t, t1) -> {
 
-                File file = new File(chosen.getText());
-                String parentPath = file.getParent();
-                System.out.println(parentPath);
-                List<Company> companies = excelHandler.processExcelBasicInfoSheet(file);
-                List<Company> resultCompanies = excelHandler.processExcelTemplateSub(companies, file);
+            File file = new File(chosen.getText());
+            String parentPath = file.getParent();
+            List<Company> companies = excelHandler.processExcelBasicInfoSheet(file);
+            List<Company> resultCompanies = excelHandler.processExcelTemplateSub(companies, file);
 
-                for (Company c : resultCompanies) {
-                    wordHandler.processWordTemplate(c, parentPath);
-                }
-                resultDir.setText("Please see directory for results " + parentPath);
+            for (Company c : resultCompanies) {
+                wordHandler.processWordTemplate(c, parentPath);
             }
+            resultDir.setText("Please see directory for results " + parentPath);
         });
 
 

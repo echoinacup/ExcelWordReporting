@@ -3,8 +3,6 @@ package com.echoinacup.service.word;
 import com.echoinacup.domain.Company;
 import com.echoinacup.service.file.FileService;
 import com.google.common.collect.Lists;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.*;
 import org.apache.xmlbeans.XmlException;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRow;
@@ -49,18 +47,17 @@ public class WordHandler {
     }
 
 
-    private void addRowsToSubTable(XWPFTable tbl, List<List<String>> subSets) {
-        XWPFTableRow rowTemplate = tbl.getRow(1);
-        XWPFTableRow oldRow = rowTemplate;
-        CTRow ctrow = null;
-        try {
-            ctrow = CTRow.Factory.parse(oldRow.getCtRow().newInputStream());
-
-        } catch (XmlException | IOException e) {
-            System.out.println(e.getMessage());
-        }
-
+    private void addRowsToTable(XWPFTable tbl, List<List<String>> subSets) {
         for (List<String> subSet : subSets) {
+            XWPFTableRow rowTemplate = tbl.getRow(1);
+            XWPFTableRow oldRow = rowTemplate;
+            CTRow ctrow = null;
+            try {
+                ctrow = CTRow.Factory.parse(oldRow.getCtRow().newInputStream());
+
+            } catch (XmlException | IOException e) {
+                System.out.println(e.getMessage());
+            }
             XWPFTableRow newRow = new XWPFTableRow(ctrow, tbl);
             for (int i = 0; i < subSet.size(); i++) {
                 newRow.getCell(i).setText(subSet.get(i));
@@ -114,15 +111,15 @@ public class WordHandler {
             }
         }
         try {
-            XWPFTable tableSub = resultReport.getTables().get(1);
+            XWPFTable tableSubsidiaries = resultReport.getTables().get(1);
             XWPFTable tableActivities = resultReport.getTables().get(2);
             XWPFTable tableDataSource = resultReport.getTables().get(3);
             List<List<String>> subSets = Lists.partition(company.getSubsidiaries(), 4);
             List<List<String>> subSetsActivity = Lists.partition(company.getActivities(), 3);
             List<List<String>> subSetsDataSources = Lists.partition(company.getDataSources(), 1);
-            addRowsToSubTable(tableSub, subSets);
-            addRowsToSubTable(tableActivities, subSetsActivity);
-            addRowsToSubTable(tableDataSource, subSetsDataSources);
+            addRowsToTable(tableSubsidiaries, subSets);
+            addRowsToTable(tableActivities, subSetsActivity);
+            addRowsToTable(tableDataSource, subSetsDataSources);
 
             resultReport.write(out);
             out.close();
