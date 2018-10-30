@@ -3,6 +3,7 @@ package com.echoinacup.service.word;
 import com.echoinacup.domain.Company;
 import com.echoinacup.service.file.FileService;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.*;
 import org.apache.xmlbeans.XmlException;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRow;
@@ -187,31 +188,36 @@ public class WordHandler {
                                    String listingDate,
                                    List<String> subsidiaries) {
 
+        String sentence1 = "Incorporated in " + inceptionDate + " with headquarters in " + city + ", " + country + ". ";
+        String sentence2 = corporateName + " is a " + legalStructure + "company " + "operating within the " + sector + ".";
+        String sentence3 = " The company is engaged in " + productsServicesOffered + ".";
+        String sentence4 = " The Company provides " + cutExtraDescForDetails(detailsOfServicesOffered) + ".";
+        String sentence5 = " The company has investments and subsidiaries operating in " + insertSubsidiaries(subsidiaries) + ". ";
+        String sentencePublic = corporateName + " is a public company listed on the " + stockExchangeName + " since " + listingDate + ".";
+        String sentencePrivate = "  " + corporateName + " is a private company.";
 
-        String publicDescription = "Incorporated in " + inceptionDate +
-                " with headquarters in " + city + ", " + country + ". " + corporateName + " is a " + legalStructure + "company " +
-                "operating within the " + sector + "." +
-                " The company is engaged in " + productsServicesOffered + ". The Company provides " + cutExtraDescForDetails(detailsOfServicesOffered) + "." +
-                " The company has investments and subsidiaries operating in " + insertSubsidiaries(subsidiaries) + "." +
-                " " + corporateName + " is a public company listed on the " + stockExchangeName + " since " + listingDate + ".";
+        StringBuilder sb = new StringBuilder();
+        sb.append(sentence1);
+        sb.append(sentence2);
+        sb.append(StringUtils.isNotEmpty(productsServicesOffered) ? sentence3 : "");
+        sb.append(StringUtils.isNotEmpty(detailsOfServicesOffered) ? sentence4 : "");
+        sb.append(!subsidiaries.isEmpty() ? sentence5 : "");
+        sb.append(status == Status.PUBLIC ? sentencePublic : sentencePrivate);
 
-        String privateDescription = "Incorporated in " + inceptionDate +
-                " with headquarters in " + city + ", " + country + ". " + corporateName + " is a " + legalStructure + "company operating" +
-                " within the " + sector + "." +
-                " The company is engaged in " + productsServicesOffered + ". The Company provides " + cutExtraDescForDetails(detailsOfServicesOffered) + " . " +
-                " The company has investments and subsidiaries operating in " + insertSubsidiaries(subsidiaries) + "." +
-                "  " + corporateName + " is a private company.";
-        return status == Status.PUBLIC ? publicDescription : privateDescription;
+
+        return sb.toString();
     }
 
     private String cutExtraDescForDetails(String detailsOfServicesOffered) {
         String extraProvides = "provides";
         String resDetailsOfServices;
-        if (detailsOfServicesOffered.contains(extraProvides)) {
-            resDetailsOfServices = detailsOfServicesOffered.replace(extraProvides, "").trim();
-            return resDetailsOfServices;
+        if (StringUtils.isNotEmpty(detailsOfServicesOffered)) {
+            if (detailsOfServicesOffered.contains(extraProvides)) {
+                resDetailsOfServices = detailsOfServicesOffered.replace(extraProvides, "").trim();
+                return resDetailsOfServices;
+            }
         }
-        return detailsOfServicesOffered;
+        return "";
     }
 
     private String insertSubsidiaries(List<String> subs) {
@@ -223,5 +229,18 @@ public class WordHandler {
         return String.join(", ", set);
     }
 
+//    String publicDescription = "Incorporated in " + inceptionDate +
+//                " with headquarters in " + city + ", " + country + ". "
+//                + corporateName + " is a " + legalStructure + "company " +
+//                "operating within the " + sector + "." +
+//                " The company is engaged in " + productsServicesOffered + ". The Company provides " + cutExtraDescForDetails(detailsOfServicesOffered) + "." +
+//                " The company has investments and subsidiaries operating in " + insertSubsidiaries(subsidiaries) + "." +
+//                " " + corporateName + " is a public company listed on the " + stockExchangeName + " since " + listingDate + ".";
 
+//    String privateDescription = "Incorporated in " + inceptionDate + " with headquarters in " + city + ", " + country + ". "
+//            + corporateName + " is a " + legalStructure + "company operating" + " within the " + sector + "." +
+//            " The company is engaged in " + productsServicesOffered + "."
+//            + " The Company provides " + cutExtraDescForDetails(detailsOfServicesOffered) + " . " +
+//            " The company has investments and subsidiaries operating in " + insertSubsidiaries(subsidiaries) + "." +
+//            "  " + corporateName + " is a private company.";
 }
