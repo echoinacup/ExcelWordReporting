@@ -97,12 +97,14 @@
                     <executions>
                         <execution>
                             <id>l4j-clui</id>
+                            <!--<id>l4j-gui</id>-->
                             <phase>package</phase>
                             <goals>
                                 <goal>launch4j</goal>
                             </goals>
                             <configuration>
                                 <headerType>console</headerType>
+                                <!--<headerType>gui</headerType>-->
                                 <jar>target/JavaFxTest-1.0-SNAPSHOT-jar-with-dependencies.jar</jar>
                                 <outfile>target/FileSelector.exe</outfile>
                                 <downloadUrl>http://java.com/download</downloadUrl>
@@ -125,7 +127,7 @@
                                     <txtProductVersion>1.0.0.0</txtProductVersion>
                                     <productName>${project.name}</productName>
                                     <internalName>AppName</internalName>
-                                    <originalFilename>Test.exe</originalFilename>
+                                    <originalFilename>Reports.exe</originalFilename>
                                 </versionInfo>
                             </configuration>
                         </execution>

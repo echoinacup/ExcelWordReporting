@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.echoinacup.utils.HelpUtils.*;
+import static com.echoinacup.utils.ExcelHeader.*;
 
 public class ExcelHandler {
 

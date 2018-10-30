@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import static com.echoinacup.utils.HelpUtils.formatString;
+
 public class WordHandler {
 
 
@@ -132,30 +134,30 @@ public class WordHandler {
     }
 
     private Map<String, String> companyToWordTransformator(Company company) {
-        Map<String, String> placholdeMap = new LinkedHashMap<>();
-        placholdeMap.put("title", company.getCorporateName());
-        placholdeMap.put("corpName", company.getCorporateName());
-        placholdeMap.put("paidUpCapital", company.getPaidupCapital());
-        placholdeMap.put("shareParValue", company.getShareParValue());
-        placholdeMap.put("numberOfShares", company.getNumberOfShares());
-        placholdeMap.put("legalStructure", company.getLegalStructure());
-        placholdeMap.put("currency", company.getCurrency());
-        placholdeMap.put("inceptionDate", company.getInceptionDate());
-        placholdeMap.put("sector", company.getSector());
-        placholdeMap.put("country", company.getCountry());
-        placholdeMap.put("status", company.getStatus().status());
-        placholdeMap.put("numOfEmpl", company.getNumberOfEmployees());
-        placholdeMap.put("listingDate", company.getListingDate());
-        placholdeMap.put("exchange", company.getStockExchangeName());
-        placholdeMap.put("linkToStockProfile", company.getLinkToExchange());
-        placholdeMap.put("phone", company.getPhone());
-        placholdeMap.put("email", company.getContactEmail());
-        placholdeMap.put("website", company.getWebsite());
-        placholdeMap.put("address", company.getCompanyAddress());
-        placholdeMap.put("link", company.getLinkedIn());
-        placholdeMap.put("twit", company.getTwitter());
-        placholdeMap.put("fb", company.getFacebook());
-        placholdeMap.put("inst", company.getInstagram());
+        Map<String, String> placeholderMap = new LinkedHashMap<>();
+        placeholderMap.put("title", company.getCorporateName());
+        placeholderMap.put("corpName", company.getCorporateName());
+        placeholderMap.put("paidUpCapital", formatString(company.getPaidupCapital()));
+        placeholderMap.put("shareParValue", company.getShareParValue());
+        placeholderMap.put("numberOfShares", formatString(company.getNumberOfShares()));
+        placeholderMap.put("legalStructure", company.getLegalStructure());
+        placeholderMap.put("currency", company.getCurrency());
+        placeholderMap.put("inceptionDate", company.getInceptionDate());
+        placeholderMap.put("sector", company.getSector());
+        placeholderMap.put("country", company.getCountry());
+        placeholderMap.put("status", company.getStatus().status());
+        placeholderMap.put("numOfEmpl", company.getNumberOfEmployees());
+        placeholderMap.put("listingDate", company.getListingDate());
+        placeholderMap.put("exchange", company.getStockExchangeName());
+        placeholderMap.put("linkToStockProfile", company.getLinkToExchange());
+        placeholderMap.put("phone", company.getPhone());
+        placeholderMap.put("email", company.getContactEmail());
+        placeholderMap.put("website", company.getWebsite());
+        placeholderMap.put("address", company.getCompanyAddress());
+        placeholderMap.put("link", company.getLinkedIn());
+        placeholderMap.put("twit", company.getTwitter());
+        placeholderMap.put("fb", company.getFacebook());
+        placeholderMap.put("inst", company.getInstagram());
 
         String desc = fillDescription(company.getStatus(),
                 company.getInceptionDate(),
@@ -168,9 +170,9 @@ public class WordHandler {
                 company.getDetailsOfServicesOffered(),
                 company.getStockExchangeName(),
                 company.getListingDate());
-        placholdeMap.put("desc", desc);
+        placeholderMap.put("desc", desc);
 
-        return placholdeMap;
+        return placeholderMap;
 
     }
 

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.nio.file.FileSystem;
+import java.text.DecimalFormat;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -65,6 +66,15 @@ public class TestMethods {
 //        List<Integer> expectedLastPartition = Lists.newArrayList(1,23, 4);
 //        assertEquals(subSets.size(), 4);
 //        assertEquals(lastPartition, expectedLastPartition);
+    }
+
+    @Test
+    public void formatterTest(){
+        String number = "10000000000";
+        double amount = Double.parseDouble(number);
+        DecimalFormat formatter = new DecimalFormat("#,###");
+
+        System.out.println(formatter.format(amount));
     }
 
 
