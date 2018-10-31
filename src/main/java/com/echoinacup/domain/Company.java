@@ -47,8 +47,10 @@ public class Company {
     public void setStatus(String strStatus) {
         if (StringUtils.isNotEmpty(strStatus)) {
             this.status = Status.valueOf(strStatus.toUpperCase());
+        } else {
+            this.status = Status.PUBLIC; //By default
         }
-        this.status = Status.PUBLIC; //By default
+
     }
 
     public void setStatus(Status status) {
