@@ -202,7 +202,7 @@ public class WordHandler {
         sb.append(StringUtils.isNotEmpty(productsServicesOffered) ? sentence3 : "");
         sb.append(StringUtils.isNotEmpty(detailsOfServicesOffered) ? sentence4 : "");
         sb.append(!subsidiaries.isEmpty() ? sentence5 : "");
-        sb.append(status == Status.PUBLIC ? sentencePublic : sentencePrivate);
+        sb.append(status == Status.PUBLIC ? sentencePublic : sentencePrivate); //TODO to solve with private
 
 
         return sb.toString();
