@@ -27,7 +27,7 @@ public class ExcelHandler {
     private static final int BASIC_INFO_SHEET = 1;
     private static final int SUBS_SOURCES_SHEET = 2;
     private static final String dataSourcesHeader = "DATA SOURCES (COMPANY WEBSITE, COMPANY PROFILE IN STOCK EXCHANGE, NEWS ARTICLES OR OTHER): LINKS (HTTP://…)";
-
+    private static final String SUBSIDIARY_HEADER = "SUBSIDIARY COMPANY (ALL THE ONES YOU CAN FIND)";
 
     private FileService fileService;
 
@@ -122,7 +122,7 @@ public class ExcelHandler {
         boolean isDataSources = false;
 
         start:
-        for (int rowNum = rowStart + 1; rowNum <= rowEnd; rowNum++) { //skip header  //TODO ask if structure the same
+        for (int rowNum = rowStart; rowNum <= rowEnd; rowNum++) { //skip header  //TODO ask if structure the same
             XSSFRow r = spreadsheet.getRow(rowNum);
             if (handleEmptyRow(r)) continue;
 
@@ -130,7 +130,9 @@ public class ExcelHandler {
             for (int i = 2; i < r.getLastCellNum(); i++) {
                 Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
                 String str = getCellValueAsString(cell);
-
+                if (SUBSIDIARY_HEADER.equals(str)) {
+                    continue start;
+                }
                 if (isSubsidiary) {
                     if (!"DATE (DAY FULL MONTH YEAR)".equals(str)) {
                         if (StringUtils.isNotEmpty(str)) {
@@ -156,7 +158,7 @@ public class ExcelHandler {
                         continue start;
                     }
                 } else if (isDataSources) {
-                    if (!"SUBSIDIARY COMPANY (ALL THE ONES YOU CAN FIND)".equals(str)) {
+                    if (!SUBSIDIARY_HEADER.equals(str)) {
                         if (StringUtils.isNotEmpty(str)) {
                             company.getDataSources().add(str);
                         } else {

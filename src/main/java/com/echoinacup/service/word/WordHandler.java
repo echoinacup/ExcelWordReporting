@@ -232,20 +232,4 @@ public class WordHandler {
         }
         return String.join(", ", set);
     }
-
-
-//    String publicDescription = "Incorporated in " + inceptionDate +
-//                " with headquarters in " + city + ", " + country + ". "
-//                + corporateName + " is a " + legalStructure + "company " +
-//                "operating within the " + sector + "." +
-//                " The company is engaged in " + productsServicesOffered + ". The Company provides " + cutExtraDescForDetails(detailsOfServicesOffered) + "." +
-//                " The company has investments and subsidiaries operating in " + insertSubsidiaries(subsidiaries) + "." +
-//                " " + corporateName + " is a public company listed on the " + stockExchangeName + " since " + listingDate + ".";
-
-//    String privateDescription = "Incorporated in " + inceptionDate + " with headquarters in " + city + ", " + country + ". "
-//            + corporateName + " is a " + legalStructure + "company operating" + " within the " + sector + "." +
-//            " The company is engaged in " + productsServicesOffered + "."
-//            + " The Company provides " + cutExtraDescForDetails(detailsOfServicesOffered) + " . " +
-//            " The company has investments and subsidiaries operating in " + insertSubsidiaries(subsidiaries) + "." +
-//            "  " + corporateName + " is a private company.";
 }
