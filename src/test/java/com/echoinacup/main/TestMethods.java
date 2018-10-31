@@ -77,5 +77,17 @@ public class TestMethods {
         System.out.println(formatter.format(amount));
     }
 
+    @Test
+    public void sbTest(){
+        String a = " wbc";
+        String b = "efg";
+        StringBuilder s = new StringBuilder();
+
+        s.append(a).replace(0,2 , " W");
+
+        System.out.println(s.toString());
+
+    }
+
 
 }

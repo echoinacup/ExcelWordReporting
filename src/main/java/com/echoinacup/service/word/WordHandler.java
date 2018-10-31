@@ -188,7 +188,10 @@ public class WordHandler {
                                    String listingDate,
                                    List<String> subsidiaries) {
 
-        String sentence1 = "Incorporated in " + inceptionDate + " with headquarters in " + city + ", " + country + ". ";
+        // always have company name, city and country and sector.
+
+        String sentence1 = "Incorporated in " + inceptionDate;
+        String sentence11 = " with headquarters in " + city + ", " + country + ". ";
         String sentence2 = corporateName + " is a " + legalStructure + "company " + "operating within the " + sector + ".";
         String sentence3 = " The company is engaged in " + productsServicesOffered + ".";
         String sentence4 = " The Company provides " + cutExtraDescForDetails(detailsOfServicesOffered) + ".";
@@ -196,13 +199,14 @@ public class WordHandler {
         String sentencePublic = corporateName + " is a public company listed on the " + stockExchangeName + " since " + listingDate + ".";
         String sentencePrivate = "  " + corporateName + " is a private company.";
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(sentence1);
+        StringBuilder sb = new StringBuilder(); //TODO to think a bit
+        sb.append(StringUtils.isNotEmpty(sentence1) ? sentence1 : "");
+        sb.append(sentence11);
         sb.append(sentence2);
         sb.append(StringUtils.isNotEmpty(productsServicesOffered) ? sentence3 : "");
         sb.append(StringUtils.isNotEmpty(detailsOfServicesOffered) ? sentence4 : "");
         sb.append(!subsidiaries.isEmpty() ? sentence5 : "");
-        sb.append(status == Status.PUBLIC ? sentencePublic : sentencePrivate); //TODO to solve with private
+        sb.append(status == Status.PUBLIC ? sentencePublic : sentencePrivate);
 
 
         return sb.toString();
@@ -228,6 +232,7 @@ public class WordHandler {
         }
         return String.join(", ", set);
     }
+
 
 //    String publicDescription = "Incorporated in " + inceptionDate +
 //                " with headquarters in " + city + ", " + country + ". "
