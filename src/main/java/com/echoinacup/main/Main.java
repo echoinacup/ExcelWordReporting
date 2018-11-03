@@ -5,8 +5,6 @@ import com.echoinacup.domain.Company;
 import com.echoinacup.service.excel.ExcelHandler;
 import com.echoinacup.service.word.WordHandler;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -53,7 +51,7 @@ public class Main extends Application {
             File file = new File(chosen.getText());
             String parentPath = file.getParent();
             List<Company> companies = excelHandler.processExcelBasicInfoSheet(file);
-            List<Company> resultCompanies = excelHandler.processExcelTemplateSub(companies, file);
+            List<Company> resultCompanies = excelHandler.processExcelTemplateSubsidiaries(companies, file);
 
             for (Company c : resultCompanies) {
                 wordHandler.processWordTemplate(c, parentPath);

@@ -84,13 +84,13 @@ public class ExcelHandler {
     }
 
 
-    public List<Company> processExcelTemplateSub(List<Company> allCompanies, File file) { //Pass List of companies from the first sheet
+    public List<Company> processExcelTemplateSubsidiaries(List<Company> allCompanies, File file) { //Pass List of companies from the first sheet
         List<Company> resultList = new ArrayList<>();
         try {
             XSSFWorkbook workbook = new XSSFWorkbook(file);
             XSSFSheet spreadsheet = workbook.getSheetAt(SUBS_SOURCES_SHEET);
 
-            Map<String, Integer> map = countAndSeparateSubSheet(spreadsheet);
+            Map<String, Integer> map = countAndSeparateSubsidiariesActivitiesSourcesSheet(spreadsheet);
 
             int startIndex = 0;
             int endIndex = 0;
@@ -100,9 +100,9 @@ public class ExcelHandler {
 
                 if (startIndex == 0 && endIndex == 0) {
                     endIndex = index;
-                } else if (startIndex == 0 && endIndex != 0) {
-                    startIndex = endIndex;
-                    endIndex = index;
+                } else if (endIndex != 0) {
+                    startIndex = endIndex + 1;
+                    endIndex = index + startIndex - 1;
                 }
                 addSubToCompany(spreadsheet, c, startIndex, endIndex);
                 resultList.add(c);
@@ -122,7 +122,7 @@ public class ExcelHandler {
         boolean isDataSources = false;
 
         start:
-        for (int rowNum = rowStart; rowNum <= rowEnd; rowNum++) { //skip header  //TODO ask if structure the same
+        for (int rowNum = rowStart + 1; rowNum <= rowEnd; rowNum++) { //skip header  //TODO ask if structure the same
             XSSFRow r = spreadsheet.getRow(rowNum);
             if (handleEmptyRow(r)) continue;
 
@@ -130,11 +130,9 @@ public class ExcelHandler {
             for (int i = 2; i < r.getLastCellNum(); i++) {
                 Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
                 String str = getCellValueAsString(cell);
-                if (SUBSIDIARY_HEADER.equals(str)) {
-                    continue start;
-                }
+
                 if (isSubsidiary) {
-                    if (!"DATE (DAY FULL MONTH YEAR)".equals(str)) {
+                    if (!"DATE (DAY FULL MONTH YEAR)".equals(str)) {//&& !SUBSIDIARY_HEADER.equals(str)
                         if (StringUtils.isNotEmpty(str)) {
                             company.getSubsidiaries().add(str);
                         } else {
@@ -170,10 +168,11 @@ public class ExcelHandler {
                         continue start;
                     }
                 }
+
+
             }
         }
     }
-
 
     private boolean initHeaderMap(Map<String, String> headerMap, XSSFRow r) {
         if (r != null && r.getRowNum() == 0) {
@@ -266,16 +265,22 @@ public class ExcelHandler {
         return company;
     }
 
-    private Map<String, Integer> countAndSeparateSubSheet(XSSFSheet spreadsheet) {
+    private Map<String, Integer> countAndSeparateSubsidiariesActivitiesSourcesSheet(XSSFSheet spreadsheet) {
 
         int rowStart = spreadsheet.getFirstRowNum();
         int rowEnd = spreadsheet.getLastRowNum();
         List<String> labels = new ArrayList<>();
 
-        for (int rowNum = rowStart + 1; rowNum <= rowEnd; rowNum++) {
+        for (int rowNum = rowStart + 1; rowNum <= rowEnd; rowNum++) { //TODO
             XSSFRow r = spreadsheet.getRow(rowNum);
             Cell cell = r.getCell(1);
+            Cell cellSec = r.getCell(2);
+//            if (SUBSIDIARY_HEADER.equals(getCellValueAsString(cellSec))) {
+//                rowNum++;
+//            } else {
             labels.add(getCellValueAsString(cell));
+//            }
+
         }
         return createFrequencyMap(labels);
     }

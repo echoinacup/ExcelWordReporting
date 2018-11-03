@@ -192,7 +192,7 @@ public class WordHandler {
 
         String sentence1 = "Incorporated in " + inceptionDate;
         String sentence11 = " with headquarters in " + city + ", " + country + ". ";
-        String sentence2 = corporateName + " is a " + legalStructure + "company " + "operating within the " + sector + ".";
+        String sentence2 = corporateName + " is a " + legalStructure + "company " + "operating within the " + sector + " sector.";
         String sentence3 = " The company is engaged in " + productsServicesOffered + ".";
         String sentence4 = " The Company provides " + cutExtraDescForDetails(detailsOfServicesOffered) + ".";
         String sentence5 = " The company has investments and subsidiaries operating in " + insertSubsidiaries(subsidiaries) + ". ";
@@ -224,8 +224,8 @@ public class WordHandler {
         return "";
     }
 
-    private String insertSubsidiaries(List<String> subs) {
-        List<List<String>> subSets = Lists.partition(subs, 4);
+    private String insertSubsidiaries(List<String> subsidiaries) {
+        List<List<String>> subSets = Lists.partition(subsidiaries, 4);
         Set<String> set = new HashSet<>();
         for (List<String> subSet : subSets) {
             set.add(subSet.get(3)); //TODO probably regex
