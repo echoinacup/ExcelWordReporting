@@ -6,10 +6,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.*;
 import org.apache.xmlbeans.XmlException;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRow;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblBorders;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblPr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
@@ -84,7 +81,12 @@ public class WordHandler {
                     System.out.println(e.getMessage());
                 }
                 XWPFTableRow newRow = new XWPFTableRow(ctrow, tbl);
-                newRow.getCell(0).setText(subSet.get(i));
+                if (i == 0) {
+                    XWPFParagraph paragraph = newRow.getCell(0).addParagraph();
+                    setRun(paragraph.createRun(), "Arial (Body CS)", 12, subSet.get(i), true, false);
+                } else {
+                    newRow.getCell(0).setText(subSet.get(i));
+                }
                 tbl.addRow(newRow);
             }
         }
@@ -92,7 +94,7 @@ public class WordHandler {
 
     }
 
-    private void setStyleOfTableBorders(XWPFTable table){
+    private void setStyleOfTableBorders(XWPFTable table) {
         CTTblPr tblpro = table.getCTTbl().getTblPr();
 
         CTTblBorders borders = tblpro.addNewTblBorders();
@@ -105,10 +107,10 @@ public class WordHandler {
         borders.addNewInsideV().setVal(STBorder.NONE);
     }
 
-    private static void setRun (XWPFRun run , String fontFamily , int fontSize , String colorRGB , String text , boolean bold , boolean addBreak) {
+    private static void setRun(XWPFRun run, String fontFamily, int fontSize, String text, boolean bold, boolean addBreak) {
         run.setFontFamily(fontFamily);
         run.setFontSize(fontSize);
-        run.setColor(colorRGB);
+//        run.setColor(colorRGB);
         run.setText(text);
         run.setBold(bold);
         if (addBreak) run.addBreak();
@@ -279,5 +281,29 @@ public class WordHandler {
             set.add(subSet.get(3)); //TODO probably regex
         }
         return String.join(", ", set);
+    }
+
+    private static void addHyperlink(XWPFParagraph para, String text, String bookmark) {
+        //Create hyperlink in paragraph
+        CTHyperlink cLink = para.getCTP().addNewHyperlink();
+        cLink.setAnchor(bookmark);
+        //Create the linked text
+        CTText ctText = CTText.Factory.newInstance();
+        ctText.setStringValue(text);
+        CTR ctr = CTR.Factory.newInstance();
+        ctr.setTArray(new CTText[]{ctText});
+
+        //Create the formatting
+        CTFonts fonts = CTFonts.Factory.newInstance();
+        fonts.setAscii("Calibri Light");
+        CTRPr rpr = ctr.addNewRPr();
+        CTColor colour = CTColor.Factory.newInstance();
+        colour.setVal("0000FF");
+        rpr.setColor(colour);
+        CTRPr rpr1 = ctr.addNewRPr();
+        rpr1.addNewU().setVal(STUnderline.SINGLE);
+
+        //Insert the linked text into the link
+        cLink.setRArray(new CTR[]{ctr});
     }
 }
