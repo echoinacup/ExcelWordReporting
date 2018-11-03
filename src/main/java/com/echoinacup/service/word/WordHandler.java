@@ -7,6 +7,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.*;
 import org.apache.xmlbeans.XmlException;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRow;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblBorders;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
@@ -67,6 +70,50 @@ public class WordHandler {
         tbl.removeRow(1);
     }
 
+    private void addRowsToTableActivities(XWPFTable tbl, List<List<String>> subSets) {
+        for (List<String> subSet : subSets) {
+
+            for (int i = 0; i < subSet.size(); i++) {
+                XWPFTableRow rowTemplate = tbl.getRow(0);
+                XWPFTableRow oldRow = rowTemplate;
+                CTRow ctrow = null;
+                try {
+                    ctrow = CTRow.Factory.parse(oldRow.getCtRow().newInputStream());
+
+                } catch (XmlException | IOException e) {
+                    System.out.println(e.getMessage());
+                }
+                XWPFTableRow newRow = new XWPFTableRow(ctrow, tbl);
+                newRow.getCell(0).setText(subSet.get(i));
+                tbl.addRow(newRow);
+            }
+        }
+        tbl.removeRow(0);
+
+    }
+
+    private void setStyleOfTableBorders(XWPFTable table){
+        CTTblPr tblpro = table.getCTTbl().getTblPr();
+
+        CTTblBorders borders = tblpro.addNewTblBorders();
+        borders.addNewBottom().setVal(STBorder.NONE);
+        borders.addNewLeft().setVal(STBorder.NONE);
+        borders.addNewRight().setVal(STBorder.NONE);
+        borders.addNewTop().setVal(STBorder.NONE);
+        //also inner borders
+        borders.addNewInsideH().setVal(STBorder.NONE);
+        borders.addNewInsideV().setVal(STBorder.NONE);
+    }
+
+    private static void setRun (XWPFRun run , String fontFamily , int fontSize , String colorRGB , String text , boolean bold , boolean addBreak) {
+        run.setFontFamily(fontFamily);
+        run.setFontSize(fontSize);
+        run.setColor(colorRGB);
+        run.setText(text);
+        run.setBold(bold);
+        if (addBreak) run.addBreak();
+    }
+
     private XWPFDocument replacePlaceHolder(XWPFDocument xwpfDocument,
                                             Map<String, String> placeholderMap,
                                             Company company,
@@ -117,7 +164,8 @@ public class WordHandler {
             List<List<String>> subSetsActivity = Lists.partition(company.getActivities(), 3);
             List<List<String>> subSetsDataSources = Lists.partition(company.getDataSources(), 1);
             addRowsToTable(tableSubsidiaries, subSets);
-            addRowsToTable(tableActivities, subSetsActivity);
+            addRowsToTableActivities(tableActivities, subSetsActivity);
+            setStyleOfTableBorders(tableActivities);
             addRowsToTable(tableDataSource, subSetsDataSources);
 
             resultReport.write(out);
