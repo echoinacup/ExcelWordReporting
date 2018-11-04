@@ -230,6 +230,8 @@ public class ExcelHandler {
                 case BLANK:
                     strCellValue = "";
                     break;
+                default:
+                    strCellValue = "";
             }
         }
         return strCellValue;

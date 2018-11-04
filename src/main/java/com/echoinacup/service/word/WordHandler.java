@@ -48,66 +48,69 @@ public class WordHandler {
     }
 
 
-    private XWPFDocument replacePlaceHolder(XWPFDocument xwpfDocument,
+    private XWPFDocument replacePlaceHolder(XWPFDocument resultReport,
                                             Map<String, String> placeholderMap,
                                             Company company,
-                                            String path) throws
-            FileNotFoundException {
-        XWPFDocument resultReport = xwpfDocument;
+                                            String path) {
+
         String name = company.getCorporateName().isEmpty() ? "" : company.getCorporateName();
-        FileOutputStream out = new FileOutputStream(new File(path + File.separator + name + " report.docx")); //TODO set the name of the file name
 
-        for (Map.Entry<String, String> entry : placeholderMap.entrySet()) {
+        try (FileOutputStream out = new FileOutputStream(new File(path + File.separator + name + " report.docx"))) {
 
-            String placeHolder = entry.getKey();
-            String replacement = entry.getValue();
+            for (Map.Entry<String, String> entry : placeholderMap.entrySet()) {
 
-            for (XWPFParagraph p : resultReport.getParagraphs()) {
-                List<XWPFRun> runs = p.getRuns();
-                if (runs != null) {
-                    for (XWPFRun r : runs) {
-                        String text = r.getText(0);
-                        if (text != null && text.contains(placeHolder)) {
-                            text = text.replace(placeHolder, replacement);
-                            r.setText(text, 0);
+                String placeHolder = entry.getKey();
+                String replacement = entry.getValue();
+
+                for (XWPFParagraph p : resultReport.getParagraphs()) {
+                    List<XWPFRun> runs = p.getRuns();
+                    if (runs != null) {
+                        for (XWPFRun r : runs) {
+                            String text = r.getText(0);
+                            if (text != null && text.contains(placeHolder)) {
+                                text = text.replace(placeHolder, replacement);
+                                r.setText(text, 0);
+                            }
                         }
                     }
                 }
-            }
-            for (XWPFTable tbl : resultReport.getTables()) {
-                for (XWPFTableRow row : tbl.getRows()) {
-                    for (XWPFTableCell cell : row.getTableCells()) {
-                        for (XWPFParagraph p : cell.getParagraphs()) {
-                            for (XWPFRun r : p.getRuns()) {
-                                String text = r.getText(0);
-                                if (text != null && text.contains(placeHolder)) {
-                                    text = text.replace(placeHolder, replacement);
-                                    r.setText(text, 0);
+                for (XWPFTable tbl : resultReport.getTables()) {
+                    for (XWPFTableRow row : tbl.getRows()) {
+                        for (XWPFTableCell cell : row.getTableCells()) {
+                            for (XWPFParagraph p : cell.getParagraphs()) {
+                                for (XWPFRun r : p.getRuns()) {
+                                    String text = r.getText(0);
+                                    if (text != null && text.contains(placeHolder)) {
+                                        text = text.replace(placeHolder, replacement);
+                                        r.setText(text, 0);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-        try {
-            XWPFTable tableSubsidiaries = resultReport.getTables().get(1);
-            XWPFTable tableActivities = resultReport.getTables().get(2);
-            XWPFTable tableDataSource = resultReport.getTables().get(3);
-            List<List<String>> subSets = Lists.partition(company.getSubsidiaries(), 4);
-            List<List<String>> subSetsActivity = Lists.partition(company.getActivities(), 3);
-            List<List<String>> subSetsDataSources = Lists.partition(company.getDataSources(), 1);
-            addRowsToTable(tableSubsidiaries, subSets);
-            addRowsToTableActivities(tableActivities, subSetsActivity);
-            setStyleOfTableBorders(tableActivities);
-            addRowsToTableDataSources(tableDataSource, subSetsDataSources);
-            setStyleOfTableBorders(tableDataSource);
+            try {
+                XWPFTable tableSubsidiaries = resultReport.getTables().get(1);
+                XWPFTable tableActivities = resultReport.getTables().get(2);
+                XWPFTable tableDataSource = resultReport.getTables().get(3);
+                List<List<String>> subSets = Lists.partition(company.getSubsidiaries(), 4);
+                List<List<String>> subSetsActivity = Lists.partition(company.getActivities(), 3);
+                List<List<String>> subSetsDataSources = Lists.partition(company.getDataSources(), 1);
+                addRowsToTable(tableSubsidiaries, subSets);
+                addRowsToTableActivities(tableActivities, subSetsActivity);
+                setStyleOfTableBorders(tableActivities);
+                addRowsToTableDataSources(tableDataSource, subSetsDataSources);
+                setStyleOfTableBorders(tableDataSource);
 
-            resultReport.write(out);
-            out.close();
+                resultReport.write(out);
+                out.close();
 
-        } catch (IOException e) {
-            LOGGER.info(e.getMessage());
+            } catch (IOException e) {
+                LOGGER.info(e.getMessage());
+            }
+        } catch (IOException ioe) {
+
         }
         return resultReport;
     }
