@@ -217,11 +217,11 @@ public class ExcelHandler {
                         strCellValue = dateFormat.format(cell.getDateCellValue());
                     } else if (cell.getCellStyle().getDataFormatString().contains("%")) {
                         Double value = cell.getNumericCellValue() * 100;
-                        strCellValue = new String(value.toString() + "%");
+                        strCellValue = value.toString() + "%";
                     } else {
                         Double value = cell.getNumericCellValue();
                         Long longValue = value.longValue();
-                        strCellValue = new String(longValue.toString());
+                        strCellValue = longValue.toString();
                     }
                     break;
                 case BOOLEAN:
@@ -274,12 +274,7 @@ public class ExcelHandler {
         for (int rowNum = rowStart + 1; rowNum <= rowEnd; rowNum++) { //TODO
             XSSFRow r = spreadsheet.getRow(rowNum);
             Cell cell = r.getCell(1);
-            Cell cellSec = r.getCell(2);
-//            if (SUBSIDIARY_HEADER.equals(getCellValueAsString(cellSec))) {
-//                rowNum++;
-//            } else {
             labels.add(getCellValueAsString(cell));
-//            }
 
         }
         return createFrequencyMap(labels);

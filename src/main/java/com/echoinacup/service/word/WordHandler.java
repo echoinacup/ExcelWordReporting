@@ -2,6 +2,7 @@ package com.echoinacup.service.word;
 
 import com.echoinacup.domain.Company;
 import com.echoinacup.service.file.FileService;
+
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.*;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 
+import static com.echoinacup.service.word.WordUtils.*;
 import static com.echoinacup.utils.HelpUtils.formatString;
 
 public class WordHandler {
@@ -34,7 +36,7 @@ public class WordHandler {
     public void processWordTemplate(Company company, String parentPath) {
 
         XWPFDocument resultReport;
-        Map<String, String> placeholderMap = companyToWordTransformator(company);
+        Map<String, String> placeholderMap = companyToWordTransformer(company);
         try {
             resultReport = new XWPFDocument(fileService.readFile());
 
@@ -45,76 +47,6 @@ public class WordHandler {
         }
     }
 
-
-    private void addRowsToTable(XWPFTable tbl, List<List<String>> subSets) {
-        for (List<String> subSet : subSets) {
-            XWPFTableRow rowTemplate = tbl.getRow(1);
-            XWPFTableRow oldRow = rowTemplate;
-            CTRow ctrow = null;
-            try {
-                ctrow = CTRow.Factory.parse(oldRow.getCtRow().newInputStream());
-
-            } catch (XmlException | IOException e) {
-                System.out.println(e.getMessage());
-            }
-            XWPFTableRow newRow = new XWPFTableRow(ctrow, tbl);
-            for (int i = 0; i < subSet.size(); i++) {
-                newRow.getCell(i).setText(subSet.get(i));
-            }
-            tbl.addRow(newRow);
-
-        }
-        tbl.removeRow(1);
-    }
-
-    private void addRowsToTableActivities(XWPFTable tbl, List<List<String>> subSets) {
-        for (List<String> subSet : subSets) {
-
-            for (int i = 0; i < subSet.size(); i++) {
-                XWPFTableRow rowTemplate = tbl.getRow(0);
-                XWPFTableRow oldRow = rowTemplate;
-                CTRow ctrow = null;
-                try {
-                    ctrow = CTRow.Factory.parse(oldRow.getCtRow().newInputStream());
-
-                } catch (XmlException | IOException e) {
-                    System.out.println(e.getMessage());
-                }
-                XWPFTableRow newRow = new XWPFTableRow(ctrow, tbl);
-                if (i == 0) {
-                    XWPFParagraph paragraph = newRow.getCell(0).addParagraph();
-                    setRun(paragraph.createRun(), "Arial (Body CS)", 12, subSet.get(i), true, false);
-                } else {
-                    newRow.getCell(0).setText(subSet.get(i));
-                }
-                tbl.addRow(newRow);
-            }
-        }
-        tbl.removeRow(0);
-
-    }
-
-    private void setStyleOfTableBorders(XWPFTable table) {
-        CTTblPr tblpro = table.getCTTbl().getTblPr();
-
-        CTTblBorders borders = tblpro.addNewTblBorders();
-        borders.addNewBottom().setVal(STBorder.NONE);
-        borders.addNewLeft().setVal(STBorder.NONE);
-        borders.addNewRight().setVal(STBorder.NONE);
-        borders.addNewTop().setVal(STBorder.NONE);
-        //also inner borders
-        borders.addNewInsideH().setVal(STBorder.NONE);
-        borders.addNewInsideV().setVal(STBorder.NONE);
-    }
-
-    private static void setRun(XWPFRun run, String fontFamily, int fontSize, String text, boolean bold, boolean addBreak) {
-        run.setFontFamily(fontFamily);
-        run.setFontSize(fontSize);
-//        run.setColor(colorRGB);
-        run.setText(text);
-        run.setBold(bold);
-        if (addBreak) run.addBreak();
-    }
 
     private XWPFDocument replacePlaceHolder(XWPFDocument xwpfDocument,
                                             Map<String, String> placeholderMap,
@@ -168,7 +100,8 @@ public class WordHandler {
             addRowsToTable(tableSubsidiaries, subSets);
             addRowsToTableActivities(tableActivities, subSetsActivity);
             setStyleOfTableBorders(tableActivities);
-            addRowsToTable(tableDataSource, subSetsDataSources);
+            addRowsToTableDataSources(tableDataSource, subSetsDataSources);
+            setStyleOfTableBorders(tableDataSource);
 
             resultReport.write(out);
             out.close();
@@ -179,7 +112,7 @@ public class WordHandler {
         return resultReport;
     }
 
-    private Map<String, String> companyToWordTransformator(Company company) {
+    private Map<String, String> companyToWordTransformer(Company company) {
         Map<String, String> placeholderMap = new LinkedHashMap<>();
         placeholderMap.put("title", company.getCorporateName());
         placeholderMap.put("corpName", company.getCorporateName());
@@ -283,27 +216,72 @@ public class WordHandler {
         return String.join(", ", set);
     }
 
-    private static void addHyperlink(XWPFParagraph para, String text, String bookmark) {
-        //Create hyperlink in paragraph
-        CTHyperlink cLink = para.getCTP().addNewHyperlink();
-        cLink.setAnchor(bookmark);
-        //Create the linked text
-        CTText ctText = CTText.Factory.newInstance();
-        ctText.setStringValue(text);
-        CTR ctr = CTR.Factory.newInstance();
-        ctr.setTArray(new CTText[]{ctText});
 
-        //Create the formatting
-        CTFonts fonts = CTFonts.Factory.newInstance();
-        fonts.setAscii("Calibri Light");
-        CTRPr rpr = ctr.addNewRPr();
-        CTColor colour = CTColor.Factory.newInstance();
-        colour.setVal("0000FF");
-        rpr.setColor(colour);
-        CTRPr rpr1 = ctr.addNewRPr();
-        rpr1.addNewU().setVal(STUnderline.SINGLE);
+    private void addRowsToTable(XWPFTable tbl, List<List<String>> subSets) {
+        for (List<String> subSet : subSets) {
+            XWPFTableRow rowTemplate = tbl.getRow(1);
+            CTRow ctrow = getCtRowWithStyle(rowTemplate);
+            XWPFTableRow newRow = new XWPFTableRow(ctrow, tbl);
+            for (int i = 0; i < subSet.size(); i++) {
+                newRow.getCell(i).setText(subSet.get(i));
+            }
+            tbl.addRow(newRow);
 
-        //Insert the linked text into the link
-        cLink.setRArray(new CTR[]{ctr});
+        }
+        tbl.removeRow(1);
     }
+
+    private CTRow getCtRowWithStyle(XWPFTableRow rowTemplate) {
+        XWPFTableRow oldRow = rowTemplate;
+        CTRow ctrow = null;
+        try {
+            ctrow = CTRow.Factory.parse(oldRow.getCtRow().newInputStream());
+
+        } catch (XmlException | IOException e) {
+            System.out.println(e.getMessage());
+        }
+        return ctrow;
+    }
+
+    private void addRowsToTableDataSources(XWPFTable tbl, List<List<String>> subSets) {
+        for (List<String> subSet : subSets) {
+            XWPFTableRow rowTemplate = tbl.getRow(0);
+            CTRow ctrow = getCtRowWithStyle(rowTemplate);
+            XWPFTableRow newRow = new XWPFTableRow(ctrow, tbl);
+            for (int i = 0; i < subSet.size(); i++) {
+                XWPFParagraph paragraph = newRow.getCell(i).addParagraph();
+                paragraph.setAlignment(ParagraphAlignment.LEFT);
+                addHyperlink(paragraph, subSet.get(i), "Heading Text");
+            }
+            tbl.addRow(newRow);
+
+        }
+        tbl.removeRow(0);
+    }
+
+    private void addRowsToTableActivities(XWPFTable tbl, List<List<String>> subSets) { //By default subset is 3 elements size
+        for (List<String> subSet : subSets) {
+
+            for (int i = 0; i < subSet.size(); i++) {
+                XWPFTableRow rowTemplate = tbl.getRow(0);
+                CTRow ctrow = getCtRowWithStyle(rowTemplate);
+                XWPFTableRow newRow = new XWPFTableRow(ctrow, tbl);  //TODO Switch Case
+                if (i == 0) {
+                    XWPFParagraph paragraph = newRow.getCell(0).addParagraph();
+                    setRun(paragraph.createRun(), "Arial (Body CS)", 12, subSet.get(i), true, false);
+                } else if (i == 2) {
+                    XWPFParagraph paragraph = newRow.getCell(0).addParagraph();
+                    paragraph.setAlignment(ParagraphAlignment.LEFT);
+                    addHyperlink(paragraph, subSet.get(i), "Heading Text");
+                } else {
+                    newRow.getCell(0).setText(subSet.get(i));
+                }
+                tbl.addRow(newRow);
+            }
+        }
+        tbl.removeRow(0);
+
+    }
+
+
 }
