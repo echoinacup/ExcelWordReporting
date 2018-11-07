@@ -1,7 +1,6 @@
 package com.echoinacup.service.excel;
 
 import com.echoinacup.domain.Company;
-import com.echoinacup.service.file.FileService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -10,10 +9,10 @@ import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -22,19 +21,12 @@ import static com.echoinacup.utils.ExcelHeader.*;
 public class ExcelHandler {
 
 
-    private static final String pathToExcelTemplate = "templates/excel/test_example.xlsx";
     private static MissingCellPolicy xRow;
     private static final int BASIC_INFO_SHEET = 1;
     private static final int SUBS_SOURCES_SHEET = 2;
     private static final String dataSourcesHeader = "DATA SOURCES (COMPANY WEBSITE, COMPANY PROFILE IN STOCK EXCHANGE, NEWS ARTICLES OR OTHER): LINKS (HTTP://…)";
     private static final String SUBSIDIARY_HEADER = "SUBSIDIARY COMPANY (ALL THE ONES YOU CAN FIND)";
 
-    private FileService fileService;
-
-    @Autowired
-    public void setFileService(FileService fileService) {
-        this.fileService = fileService;
-    }
 
     public List<Company> processExcelBasicInfoSheet(File file) {
         List<Company> companies = new ArrayList<>();
@@ -216,8 +208,9 @@ public class ExcelHandler {
                                 "dd/MM/yyyy");
                         strCellValue = dateFormat.format(cell.getDateCellValue());
                     } else if (cell.getCellStyle().getDataFormatString().contains("%")) {
+                        DecimalFormat dec = new DecimalFormat("#0.0");
                         Double value = cell.getNumericCellValue() * 100;
-                        strCellValue = value.toString() + "%";
+                        strCellValue = dec.format(value) + "%";
                     } else {
                         Double value = cell.getNumericCellValue();
                         Long longValue = value.longValue();
@@ -273,7 +266,7 @@ public class ExcelHandler {
         int rowEnd = spreadsheet.getLastRowNum();
         List<String> labels = new ArrayList<>();
 
-        for (int rowNum = rowStart + 1; rowNum <= rowEnd; rowNum++) { //TODO
+        for (int rowNum = rowStart + 1; rowNum <= rowEnd; rowNum++) {
             XSSFRow r = spreadsheet.getRow(rowNum);
             Cell cell = r.getCell(1);
             labels.add(getCellValueAsString(cell));

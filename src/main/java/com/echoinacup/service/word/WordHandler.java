@@ -178,12 +178,12 @@ public class WordHandler {
 
         String sentence1 = "Incorporated in " + inceptionDate;
         String sentence11 = " with headquarters in " + city + ", " + country + ". ";
-        String sentence2 = corporateName + " is a " + legalStructure + "company " + "operating within the " + sector + " sector.";
+        String sentence2 = corporateName + " is a " + legalStructure + " company " + "operating within the " + sector + " sector.";
         String sentence3 = " The company is engaged in " + productsServicesOffered + ".";
         String sentence4 = " The Company provides " + cutExtraDescForDetails(detailsOfServicesOffered) + ".";
         String sentence5 = " The company has investments and subsidiaries operating in " + insertSubsidiaries(subsidiaries) + ". ";
         String sentencePublic = corporateName + " is a public company listed on the " + stockExchangeName + " since " + listingDate + ".";
-        String sentencePrivate = "  " + corporateName + " is a private company.";
+        String sentencePrivate = "" + corporateName + " is a private company.";
 
         StringBuilder sb = new StringBuilder(); //TODO to think a bit
         sb.append(StringUtils.isNotEmpty(sentence1) ? sentence1 : "");
@@ -205,6 +205,8 @@ public class WordHandler {
             if (detailsOfServicesOffered.contains(extraProvides)) {
                 resDetailsOfServices = detailsOfServicesOffered.replace(extraProvides, "").trim();
                 return resDetailsOfServices;
+            } else {
+                return detailsOfServicesOffered;
             }
         }
         return "";
@@ -214,7 +216,9 @@ public class WordHandler {
         List<List<String>> subSets = Lists.partition(subsidiaries, 4);
         Set<String> set = new HashSet<>();
         for (List<String> subSet : subSets) {
-            set.add(subSet.get(3)); //TODO probably regex
+            if (StringUtils.isNotEmpty(subSet.get(3))) {
+                set.add(subSet.get(3)); //TODO probably regex
+            }
         }
         return String.join(", ", set);
     }
