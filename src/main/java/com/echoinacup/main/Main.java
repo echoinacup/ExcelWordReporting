@@ -10,6 +10,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -30,25 +33,26 @@ public class Main extends Application {
         WordHandler wordHandler = context.getBean(WordHandler.class);
 
 
-        Button button = new Button("Choose and Save");
+        final ToggleGroup group = new ToggleGroup();
+
+        RadioButton rb1 = new RadioButton("First Report");
+        rb1.setToggleGroup(group);
+        rb1.setSelected(true);
+
+        RadioButton rb2 = new RadioButton("Second Report");
+        rb2.setToggleGroup(group);
+
+        Button buttonForReportOne = new Button("Process Report");
         Label chosen = new Label();
         Label resultDir = new Label();
-        button.setOnAction(event -> {
-            FileChooser chooser = new FileChooser();
-            File file = chooser.showOpenDialog(primaryStage);
-            if (file != null) {
-                String fileAsString = file.toString();
-                chosen.setText(fileAsString);
-            } else {
-                chosen.setText(null);
-            }
-        });
 
-
-        VBox layout = new VBox(10, button, chosen, resultDir);
+        buttonForReportOne.setOnAction(event -> chooseFileAndSetPath(primaryStage, chosen));
+        HBox hBox = new HBox(10, rb1, rb2);
+        VBox layout = new VBox(10, hBox, buttonForReportOne, chosen, resultDir);
         chosen.textProperty().addListener((ov, t, t1) -> {
 
             File file = new File(chosen.getText());
+
             String parentPath = file.getParent();
             List<Company> companies = excelHandler.processExcelBasicInfoSheet(file);
             List<Company> resultCompanies = excelHandler.processExcelTemplateSubsidiaries(companies, file);
@@ -59,13 +63,24 @@ public class Main extends Application {
             resultDir.setText("Please see directory for results " + parentPath);
         });
 
-
+        hBox.setAlignment(Pos.CENTER);
         layout.setMinWidth(400);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(10));
         primaryStage.setScene(new Scene(layout));
         primaryStage.show();
 
+    }
+
+    private void chooseFileAndSetPath(Stage primaryStage, Label chosen) {
+        FileChooser chooser = new FileChooser();
+        File file = chooser.showOpenDialog(primaryStage);
+        if (file != null) {
+            String fileAsString = file.toString();
+            chosen.setText(fileAsString);
+        } else {
+            chosen.setText(null);
+        }
     }
 
 
