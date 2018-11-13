@@ -2,6 +2,7 @@ package com.echoinacup.main;
 
 
 import com.echoinacup.domain.Company;
+import com.echoinacup.domain.Project;
 import com.echoinacup.service.excel.ExcelHandler;
 import com.echoinacup.service.word.WordHandler;
 import javafx.application.Application;
@@ -20,6 +21,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -49,12 +51,24 @@ public class Main extends Application {
         buttonForReportOne.setOnAction(event -> chooseFileAndSetPath(primaryStage, chosen));
         HBox hBox = new HBox(10, rb1, rb2);
         VBox layout = new VBox(10, hBox, buttonForReportOne, chosen, resultDir);
+
+        //TODO add first by default  and second add click handler
+
         chosen.textProperty().addListener((ov, t, t1) -> {
 
             File file = new File(chosen.getText());
 
             String parentPath = file.getParent();
-            List<Company> companies = excelHandler.processExcelBasicInfoSheet(file);
+            //----- separate into two parts
+            List<Company> companies = new ArrayList<>();
+            List<Project> projects = new ArrayList<>();
+
+            //TODO play with generics
+
+            excelHandler.processExcelBasicInfoSheetPerReport(file, true, companies, projects);
+            excelHandler.processExcelBasicInfoSheetPerReport(file, false, companies, projects);
+
+//            List<Company> companies = excelHandler.processExcelBasicInfoSheetIntoCompanies(file, is);
             List<Company> resultCompanies = excelHandler.processExcelTemplateSubsidiaries(companies, file);
 
             for (Company c : resultCompanies) {

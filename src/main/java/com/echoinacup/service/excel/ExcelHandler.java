@@ -1,6 +1,7 @@
 package com.echoinacup.service.excel;
 
 import com.echoinacup.domain.Company;
+import com.echoinacup.domain.Project;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -22,50 +23,41 @@ public class ExcelHandler {
 
 
     private static MissingCellPolicy xRow;
-    private static final int BASIC_INFO_SHEET = 1;
+    private static final int BASIC_INFO_SHEET_FIRST_REPORT = 1;
+    private static final int BASIC_INFO_SHEET_SECOND_REPORT = 2;
     private static final int SUBS_SOURCES_SHEET = 2;
-    private static final String dataSourcesHeader = "DATA SOURCES (COMPANY WEBSITE, COMPANY PROFILE IN STOCK EXCHANGE, NEWS ARTICLES OR OTHER): LINKS (HTTP://…)";
+    private static final String DATA_SOURCES_HEADER = "DATA SOURCES (COMPANY WEBSITE, COMPANY PROFILE IN STOCK EXCHANGE, NEWS ARTICLES OR OTHER): LINKS (HTTP://…)";
     private static final String SUBSIDIARY_HEADER = "SUBSIDIARY COMPANY (ALL THE ONES YOU CAN FIND)";
 
+    public void processExcelBasicInfoSheetPerReport(File file, boolean isFirstReport, List<Company> companies, List<Project> projects) {
+        if (isFirstReport) {
+            companies = processExcelBasicInfoSheetIntoCompanies(file, BASIC_INFO_SHEET_FIRST_REPORT);
+        } else {
+            projects = processExcelBasicInfoSheetIntoProjects(file, BASIC_INFO_SHEET_SECOND_REPORT);
+        }
+    }
 
-    public List<Company> processExcelBasicInfoSheet(File file) {
+    public List<Company> processExcelBasicInfoSheetIntoCompanies(File file, int pageNum) {
         List<Company> companies = new ArrayList<>();
         Map<String, String> headerMap = new LinkedHashMap<>();
 
         try {
             XSSFWorkbook workbook = new XSSFWorkbook(file);
-            XSSFSheet spreadsheet = workbook.getSheetAt(BASIC_INFO_SHEET);
+            XSSFSheet spreadsheet = workbook.getSheetAt(pageNum);
 
             int rowStart = spreadsheet.getFirstRowNum();
             int rowEnd = spreadsheet.getLastRowNum();
 
             for (int rowNum = rowStart; rowNum <= rowEnd; rowNum++) {
-                Map<String, String> companyMap = new LinkedHashMap<>();
                 XSSFRow r = spreadsheet.getRow(rowNum);
 
                 if (initHeaderMap(headerMap, r)) continue;
 
                 if (handleEmptyRow(r)) continue;
 
-                companyMap.putAll(headerMap);
+                Map<String, String> entitiesMap = populateMapForEntityCreation(headerMap, r);
 
-                List<String> values = new ArrayList<>();
-
-                for (int i = 0; i < r.getLastCellNum(); i++) {
-                    Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
-                    String str = getCellValueAsString(cell);
-                    if (StringUtils.isNotEmpty(str)) {
-                        values.add(str);
-                    } else {
-                        values.add("");
-                    }
-                }
-
-                int amount = 0;
-                for (String key : companyMap.keySet()) {
-                    companyMap.put(key, values.get(amount++));
-                }
-                companies.add(companyCreator(companyMap));
+                companies.add(companyCreator(entitiesMap));
             }
 
 
@@ -73,6 +65,59 @@ public class ExcelHandler {
             System.out.println(e.getMessage());
         }
         return companies;
+    }
+
+    public List<Project> processExcelBasicInfoSheetIntoProjects(File file, int pageNum) {
+        List<Project> projects = new ArrayList<>();
+        Map<String, String> headerMap = new LinkedHashMap<>();
+
+        try {
+            XSSFWorkbook workbook = new XSSFWorkbook(file);
+            XSSFSheet spreadsheet = workbook.getSheetAt(pageNum);
+
+            int rowStart = spreadsheet.getFirstRowNum();
+            int rowEnd = spreadsheet.getLastRowNum();
+
+            for (int rowNum = rowStart; rowNum <= rowEnd; rowNum++) {
+                XSSFRow r = spreadsheet.getRow(rowNum);
+
+                if (initHeaderMap(headerMap, r)) continue;
+
+                if (handleEmptyRow(r)) continue;
+
+                Map<String, String> entitiesMap = populateMapForEntityCreation(headerMap, r);
+
+                projects.add(projectCreator(entitiesMap));
+            }
+
+
+        } catch (IOException | InvalidFormatException e) {
+            System.out.println(e.getMessage());
+        }
+        return projects;
+    }
+
+    private Map<String, String> populateMapForEntityCreation(Map<String, String> headerMap, XSSFRow r) {
+        Map<String, String> entitiesMap = new LinkedHashMap<>();
+        entitiesMap.putAll(headerMap);
+
+        List<String> values = new ArrayList<>();
+
+        for (int i = 0; i < r.getLastCellNum(); i++) {
+            Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
+            String str = getCellValueAsString(cell);
+            if (StringUtils.isNotEmpty(str)) {
+                values.add(str);
+            } else {
+                values.add("");
+            }
+        }
+
+        int amount = 0;
+        for (String key : entitiesMap.keySet()) {
+            entitiesMap.put(key, values.get(amount++));
+        }
+        return entitiesMap;
     }
 
 
@@ -136,7 +181,7 @@ public class ExcelHandler {
                         continue start;
                     }
                 } else if (isActivities) {
-                    if (!StringUtils.equals(dataSourcesHeader, str)) {
+                    if (!StringUtils.equals(DATA_SOURCES_HEADER, str)) {
                         if (StringUtils.isNotEmpty(str)) {
                             company.getActivities().add(str);
                         } else {
@@ -258,6 +303,31 @@ public class ExcelHandler {
         company.setFacebook(valueMap.get(keyFacebook));
         company.setInstagram(valueMap.get(keyInstagram));
         return company;
+    }
+
+
+    private Project projectCreator(Map<String, String> valueMap) {
+        Project project = new Project();
+        project.setProjectName(valueMap.get(keyProjectName));
+        project.setDevelopmentConstructionCost(valueMap.get(keyDevConstCost));
+        project.setCurrency(valueMap.get(keyCurrency));
+        project.setOwnerCompany(valueMap.get(keyOwnerCompany));
+        project.setParentCompany(valueMap.get(keyParentCompany));
+        project.setProjectDeveloper(valueMap.get(keyProjectDeveloper));
+        project.setProjectContractor(valueMap.get(keyProjectContractor));
+        project.setConstructionDate(valueMap.get(keyConstructionDate));
+        project.setCompletionDate(valueMap.get(keyCompletionDate));
+        project.setSector(valueMap.get(keySector));
+        project.setProjectType(valueMap.get(keyProjectType));
+        project.setCountry(valueMap.get(keyCountry));
+        project.setLandOwnership(valueMap.get(keyLandOwnership));
+        project.setTotalAreaSize(valueMap.get(keyTotalAreaSize));
+        project.setTotalBuiltupArea(valueMap.get(keyTotalBuiltUpArea));
+        project.setTotalRentableArea(valueMap.get(keyTotalRentableArea));
+        project.setStatus(valueMap.get(keyProjectStatus));
+        project.setProjectAddress(valueMap.get(keyProjectAddress));
+        project.setProjectWebsite(valueMap.get(keyProjectWebSite));
+        return project;
     }
 
     private Map<String, Integer> countAndSeparateSubsidiariesActivitiesSourcesSheet(XSSFSheet spreadsheet) {

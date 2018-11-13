@@ -2,16 +2,14 @@ package com.echoinacup.service.word;
 
 import com.echoinacup.domain.Company;
 import com.echoinacup.service.file.FileService;
-
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.*;
 import org.apache.xmlbeans.XmlException;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRow;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
@@ -290,5 +288,6 @@ public class WordHandler {
 
     }
 
+    String projectDescr = "Located in Riyadh, Saudi Arabia. Al Qasr Mall is a commercial mall comprised of four floors with more than 350 retail stores and a parking capacity for 1,846 cars. The retail facilities total area-size is about 250,000 square meters while the leasing area is 85,000 square meter in addition to 35,000 square meter of open spaces. Al Qasr Mall was completed on 31 January 2012.";
 
 }

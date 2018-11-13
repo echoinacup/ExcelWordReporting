@@ -35,5 +35,27 @@ public class ExcelHeader {
     public static final String keyInstagram = "Instagram";
 
 
+    public static final String keyProjectName = "PROJECT NAME";
+    public static final String keyDevConstCost = "DEVELOPMENT/ CONSTRUCTION COST (IF AVAILABLE)";
+    public static final String keyCurrency = "CURRENCY";
+    public static final String keyOwnerCompany = "OWNER COMPANY";
+    public static final String keyParentCompany = "PARENT COMPANY";
+    public static final String keyProjectDeveloper = "PROJECT DEVELOPER";
+    public static final String keyProjectContractor = "PROJECT CONTRACTOR";
+    public static final String keyConstructionDate = "CONSTRUCTION DATE";
+    public static final String keyCompletionDate = "COMPLETION DATE";
+    public static final String keyProjectType = "PROJECT TYPE";
+    public static final String keyConstructionComprises = "CONSTRUCTION COMPRISES/CONSISTS OF";
+    public static final String keyLandOwnership = "LAND-OWNERSHIP";
+    public static final String keyTotalAreaSize = "TOTAL AREA SIZE";
+    public static final String keyTotalBuiltUpArea = "TOTAL BUILT-UP AREA (SQUARE METERS, IF OTHER MEASUREMENT, PLEASE INDICATE)";
+    public static final String keyTotalRentableArea = "TOTAL RENTABLE AREA (SQUARE METERS, IF OTHER MEASUREMENT, PLEASE INDICATE)";
+    public static final String keyOtherAreasMentiond = "OTHER AREAS MENTIOND (ENTER SQUARE METERS AND FUNCTION, OPEN AREA, PARKING SPACE ET.C";
+    public static final String keyProjectStatus = "STATUS";
+    public static final String keyProjectAddress = "PROJECT ADDRESS";
+    public static final String keyProjectWebSite = "PROJECT WEBSITE";
+    public static final String keyLatitude = "LATITUDE";
+    public static final String keyLongitude = "LONGITUDE";
+
 
 }
