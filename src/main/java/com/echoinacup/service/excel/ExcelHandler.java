@@ -29,21 +29,14 @@ public class ExcelHandler {
     private static final String DATA_SOURCES_HEADER = "DATA SOURCES (COMPANY WEBSITE, COMPANY PROFILE IN STOCK EXCHANGE, NEWS ARTICLES OR OTHER): LINKS (HTTP://…)";
     private static final String SUBSIDIARY_HEADER = "SUBSIDIARY COMPANY (ALL THE ONES YOU CAN FIND)";
 
-    public void processExcelBasicInfoSheetPerReport(File file, boolean isFirstReport, List<Company> companies, List<Project> projects) {
-        if (isFirstReport) {
-            companies = processExcelBasicInfoSheetIntoCompanies(file, BASIC_INFO_SHEET_FIRST_REPORT);
-        } else {
-            projects = processExcelBasicInfoSheetIntoProjects(file, BASIC_INFO_SHEET_SECOND_REPORT);
-        }
-    }
 
-    public List<Company> processExcelBasicInfoSheetIntoCompanies(File file, int pageNum) {
+    public List<Company> processExcelBasicInfoSheetIntoCompanies(File file) {
         List<Company> companies = new ArrayList<>();
         Map<String, String> headerMap = new LinkedHashMap<>();
 
         try {
             XSSFWorkbook workbook = new XSSFWorkbook(file);
-            XSSFSheet spreadsheet = workbook.getSheetAt(pageNum);
+            XSSFSheet spreadsheet = workbook.getSheetAt(BASIC_INFO_SHEET_FIRST_REPORT);
 
             int rowStart = spreadsheet.getFirstRowNum();
             int rowEnd = spreadsheet.getLastRowNum();
@@ -67,13 +60,13 @@ public class ExcelHandler {
         return companies;
     }
 
-    public List<Project> processExcelBasicInfoSheetIntoProjects(File file, int pageNum) {
+    public List<Project> processExcelBasicInfoSheetIntoProjects(File file) {
         List<Project> projects = new ArrayList<>();
         Map<String, String> headerMap = new LinkedHashMap<>();
 
         try {
             XSSFWorkbook workbook = new XSSFWorkbook(file);
-            XSSFSheet spreadsheet = workbook.getSheetAt(pageNum);
+            XSSFSheet spreadsheet = workbook.getSheetAt(BASIC_INFO_SHEET_SECOND_REPORT);
 
             int rowStart = spreadsheet.getFirstRowNum();
             int rowEnd = spreadsheet.getLastRowNum();
@@ -229,10 +222,12 @@ public class ExcelHandler {
     private void fillInDescriptionMapWithKeys(XSSFRow r, Map<String, String> headerMap) {
         for (int i = 0; i < 29; i++) {
             Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
-            String value = cell.getStringCellValue();
-            if (StringUtils.isNotEmpty(value)) {
-                headerMap.put(value.trim(), "");
-            }
+//            if (cell != null) {
+                String value = cell.getStringCellValue();
+                if (StringUtils.isNotEmpty(value)) {
+                    headerMap.put(value.trim(), "");
+                }
+//            }
         }
     }
 
