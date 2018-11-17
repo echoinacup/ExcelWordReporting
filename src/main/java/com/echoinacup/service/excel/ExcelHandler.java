@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -26,9 +25,13 @@ public class ExcelHandler {
     private static MissingCellPolicy xRow;
     private static final int BASIC_INFO_SHEET_FIRST_REPORT = 1;
     private static final int BASIC_INFO_SHEET_SECOND_REPORT = 0;
-    private static final int SUBS_SOURCES_SHEET = 2;
+    private static final int SUBS_SOURCES_SHEET_COMPANIES = 2;
+    private static final int SUBS_SOURCES_SHEET_PROJECTS = 1;
     private static final String DATA_SOURCES_HEADER = "DATA SOURCES (COMPANY WEBSITE, COMPANY PROFILE IN STOCK EXCHANGE, NEWS ARTICLES OR OTHER): LINKS (HTTP://…)";
     private static final String SUBSIDIARY_HEADER = "SUBSIDIARY COMPANY (ALL THE ONES YOU CAN FIND)";
+    private static final String PROJECT_PICTURES_HEADER = "PROJECT PICTURES (UP TO 10 PICTURES)";
+    private static final String PROJECT_VIDEOS_HEADER = "PROJECT VIDEOS (UP TO 10 VIDEOS)";
+    private static final String DATE_HEADER = "DATE (DAY FULL MONTH YEAR)";
 
 
     public List<Company> processExcelBasicInfoSheetIntoCompanies(File file) {
@@ -116,13 +119,12 @@ public class ExcelHandler {
         return entitiesMap;
     }
 
-
-    public List<Company> processExcelTemplateSubsidiaries(List<Company> allCompanies, File file) { //Pass List of companies from the first sheet
-        System.out.println("processExcelTemplateSubsidiaries started ...");
+    public List<Company> processExcelTemplateSubsidiariesForCompanies(List<Company> allCompanies, File file) { //Pass List of companies from the first sheet
+        System.out.println("processExcelTemplateSubsidiariesForCompanies started ...");
         List<Company> resultList = new ArrayList<>();
         try {
             XSSFWorkbook workbook = new XSSFWorkbook(file);
-            XSSFSheet spreadsheet = workbook.getSheetAt(SUBS_SOURCES_SHEET);
+            XSSFSheet spreadsheet = workbook.getSheetAt(SUBS_SOURCES_SHEET_COMPANIES);
 
             Map<String, Integer> map = countAndSeparateSubsidiariesActivitiesSourcesSheet(spreadsheet);
 
@@ -145,10 +147,41 @@ public class ExcelHandler {
         } catch (IOException | InvalidFormatException e) {
             System.out.println(e.getMessage());
         }
-        System.out.println("processExcelTemplateSubsidiaries finished");
+        System.out.println("processExcelTemplateSubsidiariesForCompanies finished");
         return resultList;
     }
 
+    public List<Project> processExcelTemplateSubsidiariesForProjects(List<Project> allProjects, File file) { //Pass List of companies from the first sheet
+        System.out.println("processExcelTemplateSubsidiariesForProjects started ...");
+        List<Project> resultList = new ArrayList<>();
+        try {
+            XSSFWorkbook workbook = new XSSFWorkbook(file);
+            XSSFSheet spreadsheet = workbook.getSheetAt(SUBS_SOURCES_SHEET_PROJECTS);
+
+            Map<String, Integer> map = countAndSeparateSubsidiariesActivitiesSourcesSheet(spreadsheet);
+
+            int startIndex = 0;
+            int endIndex = 0;
+
+            for (Project p : allProjects) {
+                int index = map.get(p.getProjectName());
+
+                if (startIndex == 0 && endIndex == 0) {
+                    endIndex = index;
+                } else if (endIndex != 0) {
+                    startIndex = endIndex + 1;
+                    endIndex = index + startIndex - 1;
+                }
+                addSubToProjects(spreadsheet, p, startIndex, endIndex);
+                resultList.add(p);
+            }
+
+        } catch (IOException | InvalidFormatException e) {
+            System.out.println(e.getMessage());
+        }
+        System.out.println("processExcelTemplateSubsidiariesForCompanies finished");
+        return resultList;
+    }
 
     private void addSubToCompany(XSSFSheet spreadsheet, Company company, int rowStart, int rowEnd) {
 
@@ -157,7 +190,7 @@ public class ExcelHandler {
         boolean isDataSources = false;
 
         start:
-        for (int rowNum = rowStart + 1; rowNum <= rowEnd; rowNum++) { //skip header  //TODO ask if structure the same
+        for (int rowNum = rowStart + 1; rowNum <= rowEnd; rowNum++) {
             XSSFRow r = spreadsheet.getRow(rowNum);
             if (handleEmptyRow(r)) continue;
 
@@ -167,11 +200,11 @@ public class ExcelHandler {
                 String str = getCellValueAsString(cell);
 
                 if (isSubsidiary) {
-                    if (!"DATE (DAY FULL MONTH YEAR)".equals(str)) {
+                    if (!DATE_HEADER.equals(str)) {
                         if (StringUtils.isNotEmpty(str)) {
                             company.getSubsidiaries().add(str);
                         } else {
-                            company.getSubsidiaries().add("-");
+                            company.getSubsidiaries().add("");
                         }
                     } else {
                         isSubsidiary = false;
@@ -209,6 +242,78 @@ public class ExcelHandler {
         }
     }
 
+    private void addSubToProjects(XSSFSheet spreadsheet, Project project, int rowStart, int rowEnd) {
+
+        boolean isPictures = true;
+        boolean isProjectsVideos = false;
+        boolean isActivities = false;
+        boolean isDataSources = false;
+
+        start:
+        for (int rowNum = rowStart + 1; rowNum <= rowEnd; rowNum++) {
+            XSSFRow r = spreadsheet.getRow(rowNum);
+            if (handleEmptyRow(r)) continue;
+
+
+            for (int i = 2; i < r.getLastCellNum(); i++) {
+                Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
+                String str = getCellValueAsString(cell);
+
+                if (isPictures) {
+                    if (!PROJECT_VIDEOS_HEADER.equals(str)) {
+                        if (StringUtils.isNotEmpty(str)) {
+                            project.getProjectPictures().add(str);
+                        } else {
+                            project.getProjectPictures().add("");
+                        }
+                    } else {
+                        isPictures = false;
+                        isProjectsVideos = true;
+                        continue start;
+                    }
+                } else if (isProjectsVideos) {
+                    if (!StringUtils.equals(DATE_HEADER, str)) {
+                        if (StringUtils.isNotEmpty(str)) {
+                            project.getProjectVideos().add(str);
+                        } else {
+                            project.getProjectVideos().add("");
+                        }
+                    } else {
+                        isProjectsVideos = false;
+                        isActivities = true;
+                        continue start;
+                    }
+                } else if (isActivities) {
+                    if (!StringUtils.equals(DATA_SOURCES_HEADER, str)) {
+                        if (StringUtils.isNotEmpty(str)) {
+                            project.getProjectVideos().add(str);
+                        } else {
+                            project.getProjectVideos().add("");
+                        }
+                    } else {
+                        isActivities = false;
+                        isDataSources = true;
+                        continue start;
+                    }
+                } else if (isDataSources) {
+                    if (!PROJECT_PICTURES_HEADER.equals(str)) {
+                        if (StringUtils.isNotEmpty(str)) {
+                            project.getDataSources().add(str);
+                        } else {
+                            project.getDataSources().add("");
+                        }
+                    } else {
+                        isDataSources = false;
+                        isPictures = true;
+                        continue start;
+                    }
+                }
+
+
+            }
+        }
+    }
+
     private boolean initHeaderMap(Map<String, String> headerMap, XSSFRow r) {
         if (r != null && r.getRowNum() == 0) {
             fillInDescriptionMapWithKeys(r, headerMap);
@@ -219,25 +324,25 @@ public class ExcelHandler {
 
     private boolean handleEmptyRow(XSSFRow r) {
         //TODO handle all cells
-        if (r == null) { // This whole row is empty and handle it as needed
+        if (r == null) {
+            return true;
+        } else if (isRowWithEmptyFields(r)) {
             return true;
         }
-//        else if (isRowWithEmptyFields(r)) {
-//            return true;
-//        }
         return false;
     }
 
-//    private boolean isRowWithEmptyFields(XSSFRow r) {
-//        for (int i = 0; i < r.getLastCellNum(); i++) {
-//            Cell cell = r.getCell(i, xRow.RETURN_NULL_AND_BLANK);
-//            if ((cell == null) || (cell.equals("")) || (cell.getCellType() == cell.CELL_TYPE_BLANK)) {
-//                return true;
-//            }
-//
-//        }
-//        return false;
-//    }
+    private boolean isRowWithEmptyFields(XSSFRow r) {
+        for (int i = 0; i < r.getLastCellNum(); i++) {
+            Cell cell = r.getCell(i, xRow.RETURN_NULL_AND_BLANK);
+            if ((cell == null) || (cell.equals("")) || (cell.getCellType() == cell.CELL_TYPE_BLANK)) {
+                i++;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
 
     private void fillInDescriptionMapWithKeys(XSSFRow r, Map<String, String> headerMap) {
         for (int i = 0; i < r.getLastCellNum(); i++) {

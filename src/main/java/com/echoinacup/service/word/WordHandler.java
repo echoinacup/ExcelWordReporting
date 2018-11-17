@@ -1,6 +1,7 @@
 package com.echoinacup.service.word;
 
 import com.echoinacup.domain.Company;
+import com.echoinacup.domain.Project;
 import com.echoinacup.service.file.FileService;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -31,18 +32,33 @@ public class WordHandler {
     }
 
 
-    public void processWordTemplate(Company company, String parentPath) {
+    public void processWordTemplateForCompanies(Company company,String templatePath, String parentPath) {
         System.out.println("processWordTemplate started");
         XWPFDocument resultReport;
         Map<String, String> placeholderMap = companyToWordTransformer(company);
         try {
-            resultReport = new XWPFDocument(fileService.readFile());
+            resultReport = new XWPFDocument(fileService.readFile(templatePath));
 
             replacePlaceHolder(resultReport, placeholderMap, company, parentPath);
 
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+        System.out.println("processWordTemplate finished");
+    }
+
+    public void processWordTemplateForProjects(Project project, String templatePath, String parentPath) {
+        System.out.println("processWordTemplate started");
+        XWPFDocument resultReport;
+//        Map<String, String> placeholderMap = companyToWordTransformer(company);
+//        try {
+//            resultReport = new XWPFDocument(fileService.readFile(templatePath));
+//
+//            replacePlaceHolder(resultReport, placeholderMap, company, parentPath);
+//
+//        } catch (IOException e) {
+//            System.out.println(e.getMessage());
+//        }
         System.out.println("processWordTemplate finished");
     }
 
@@ -212,11 +228,11 @@ public class WordHandler {
     }
 
     private String insertSubsidiaries(List<String> subsidiaries) {
-        List<List<String>> subSets = Lists.partition(subsidiaries, 4); //TODO add list of 4 elements
+        List<List<String>> subSets = Lists.partition(subsidiaries, 4);
         Set<String> set = new HashSet<>();
         for (List<String> subSet : subSets) {
             if (subSet.size() == 4 && StringUtils.isNotEmpty(subSet.get(3))) {
-                set.add(subSet.get(3)); //TODO probably regex
+                set.add(subSet.get(3));
             }
         }
         return String.join(", ", set);
@@ -271,7 +287,7 @@ public class WordHandler {
             for (int i = 0; i < subSet.size(); i++) {
                 XWPFTableRow rowTemplate = tbl.getRow(0);
                 CTRow ctrow = getCtRowWithStyle(rowTemplate);
-                XWPFTableRow newRow = new XWPFTableRow(ctrow, tbl);  //TODO Switch Case
+                XWPFTableRow newRow = new XWPFTableRow(ctrow, tbl);
                 if (i == 0) {
                     XWPFParagraph paragraph = newRow.getCell(0).addParagraph();
                     setRun(paragraph.createRun(), "Arial (Body CS)", 12, subSet.get(i), true, false);

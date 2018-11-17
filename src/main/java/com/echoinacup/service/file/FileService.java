@@ -9,10 +9,7 @@ import java.net.URISyntaxException;
 @Component
 public class FileService {
 
-    private static final String path = "templates/word/word_template_report_1.docx";
-    private static final String path2 = "templates/word/word_template_report_2.docx";
-
-    public InputStream readFile() {
+    public InputStream readFile(String path) {
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream is = classLoader.getResourceAsStream(path);
         return is;

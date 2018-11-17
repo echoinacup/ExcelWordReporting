@@ -33,6 +33,7 @@ public class Project {
     private List<String> projectUpdates = new ArrayList<>(); //TODO last element could be separated
     private List<String> projectPictures = new ArrayList<>();
     private List<String> projectVideos = new ArrayList<>();
+    private List<String> dataSources = new ArrayList<>();
 
 
     @Override
@@ -60,6 +61,7 @@ public class Project {
                 ", projectUpdates=" + projectUpdates +
                 ", projectPictures=" + projectPictures +
                 ", projectVideos=" + projectVideos +
+                ", getDataSources=" + dataSources +
                 '}';
     }
 }
