@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -24,13 +25,14 @@ public class ExcelHandler {
 
     private static MissingCellPolicy xRow;
     private static final int BASIC_INFO_SHEET_FIRST_REPORT = 1;
-    private static final int BASIC_INFO_SHEET_SECOND_REPORT = 2;
+    private static final int BASIC_INFO_SHEET_SECOND_REPORT = 0;
     private static final int SUBS_SOURCES_SHEET = 2;
     private static final String DATA_SOURCES_HEADER = "DATA SOURCES (COMPANY WEBSITE, COMPANY PROFILE IN STOCK EXCHANGE, NEWS ARTICLES OR OTHER): LINKS (HTTP://…)";
     private static final String SUBSIDIARY_HEADER = "SUBSIDIARY COMPANY (ALL THE ONES YOU CAN FIND)";
 
 
     public List<Company> processExcelBasicInfoSheetIntoCompanies(File file) {
+        System.out.println("Process of Basic info for Companies started...");
         List<Company> companies = new ArrayList<>();
         Map<String, String> headerMap = new LinkedHashMap<>();
 
@@ -40,7 +42,7 @@ public class ExcelHandler {
 
             int rowStart = spreadsheet.getFirstRowNum();
             int rowEnd = spreadsheet.getLastRowNum();
-
+            System.out.println("count of rows is " + rowEnd);
             for (int rowNum = rowStart; rowNum <= rowEnd; rowNum++) {
                 XSSFRow r = spreadsheet.getRow(rowNum);
 
@@ -57,6 +59,7 @@ public class ExcelHandler {
         } catch (IOException | InvalidFormatException e) {
             System.out.println(e.getMessage());
         }
+        System.out.println("Process of Basic info for Companies finished");
         return companies;
     }
 
@@ -115,6 +118,7 @@ public class ExcelHandler {
 
 
     public List<Company> processExcelTemplateSubsidiaries(List<Company> allCompanies, File file) { //Pass List of companies from the first sheet
+        System.out.println("processExcelTemplateSubsidiaries started ...");
         List<Company> resultList = new ArrayList<>();
         try {
             XSSFWorkbook workbook = new XSSFWorkbook(file);
@@ -141,6 +145,7 @@ public class ExcelHandler {
         } catch (IOException | InvalidFormatException e) {
             System.out.println(e.getMessage());
         }
+        System.out.println("processExcelTemplateSubsidiaries finished");
         return resultList;
     }
 
@@ -162,11 +167,11 @@ public class ExcelHandler {
                 String str = getCellValueAsString(cell);
 
                 if (isSubsidiary) {
-                    if (!"DATE (DAY FULL MONTH YEAR)".equals(str)) {//&& !SUBSIDIARY_HEADER.equals(str)
+                    if (!"DATE (DAY FULL MONTH YEAR)".equals(str)) {
                         if (StringUtils.isNotEmpty(str)) {
                             company.getSubsidiaries().add(str);
                         } else {
-                            company.getSubsidiaries().add("");
+                            company.getSubsidiaries().add("-");
                         }
                     } else {
                         isSubsidiary = false;
@@ -213,21 +218,37 @@ public class ExcelHandler {
     }
 
     private boolean handleEmptyRow(XSSFRow r) {
+        //TODO handle all cells
         if (r == null) { // This whole row is empty and handle it as needed
             return true;
         }
+//        else if (isRowWithEmptyFields(r)) {
+//            return true;
+//        }
         return false;
     }
 
+//    private boolean isRowWithEmptyFields(XSSFRow r) {
+//        for (int i = 0; i < r.getLastCellNum(); i++) {
+//            Cell cell = r.getCell(i, xRow.RETURN_NULL_AND_BLANK);
+//            if ((cell == null) || (cell.equals("")) || (cell.getCellType() == cell.CELL_TYPE_BLANK)) {
+//                return true;
+//            }
+//
+//        }
+//        return false;
+//    }
+
     private void fillInDescriptionMapWithKeys(XSSFRow r, Map<String, String> headerMap) {
-        for (int i = 0; i < 29; i++) {
+        for (int i = 0; i < r.getLastCellNum(); i++) {
+            System.out.println("fill in desc map r num " + i);
             Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
-//            if (cell != null) {
+            if (cell != null) {
                 String value = cell.getStringCellValue();
                 if (StringUtils.isNotEmpty(value)) {
                     headerMap.put(value.trim(), "");
                 }
-//            }
+            }
         }
     }
 
@@ -240,7 +261,7 @@ public class ExcelHandler {
         if (cell != null) {
             switch (cell.getCellTypeEnum()) {
                 case STRING:
-                    strCellValue = cell.toString();
+                    strCellValue = cell.toString().trim();
                     break;
                 case NUMERIC:
                     if (DateUtil.isCellDateFormatted(cell)) {

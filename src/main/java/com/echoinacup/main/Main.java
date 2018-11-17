@@ -44,22 +44,30 @@ public class Main extends Application {
         Label resultDir = new Label();
 
         buttonForReportOne.setOnAction(event -> chooseFileAndSetPath(primaryStage, chosen));
-//        buttonForReportOne.setOnAction(event -> chooseFileAndSetPath(primaryStage, chosen2));
+//        buttonForReportTwo.setOnAction(event -> chooseFileAndSetPath(primaryStage, chosen2));
 
-        HBox hBox = new HBox(10, buttonForReportOne, buttonForReportTwo);
-        VBox layout = new VBox(10, hBox, chosen, chosen2, resultDir);
+     //   HBox hBox = new HBox(10, buttonForReportOne, buttonForReportTwo);
+        VBox layout = new VBox(10, buttonForReportOne, chosen, resultDir);
 
         chosen.textProperty().addListener((ov, t, t1) -> {
             System.out.println("report 1 creating");
             File file = new File(chosen.getText());
             String parentPath = file.getParent();
-            runReportOneCreating(excelHandler, wordHandler, resultDir, file, parentPath);
+            List<Company> companies = excelHandler.processExcelBasicInfoSheetIntoCompanies(file);
+            List<Company> resultCompanies = excelHandler.processExcelTemplateSubsidiaries(companies, file);
+
+            for (Company c : resultCompanies) {
+                wordHandler.processWordTemplate(c, parentPath);
+            }
+            resultDir.setText("Please see directory for results " + parentPath);
+//            runReportOneCreating(excelHandler, wordHandler, resultDir, file, parentPath);
         });
 
 //        chosen2.textProperty().addListener((ov, t, t1) -> {
 //            System.out.println("report 2 creating");
 //            File file = new File(chosen2.getText());
 //            String parentPath = file.getParent();
+//            runReportTwoCreating(excelHandler, wordHandler, resultDir, file, parentPath);
 //        });
 
         layout.setMinWidth(400);
@@ -71,11 +79,23 @@ public class Main extends Application {
     }
 
     private void runReportOneCreating(ExcelHandler excelHandler, WordHandler wordHandler, Label resultDir, File file, String parentPath) {
+        System.out.println("report one creating ...");
         List<Company> companies = excelHandler.processExcelBasicInfoSheetIntoCompanies(file);
         List<Company> resultCompanies = excelHandler.processExcelTemplateSubsidiaries(companies, file);
 
         for (Company c : resultCompanies) {
             wordHandler.processWordTemplate(c, parentPath);
+        }
+        resultDir.setText("Please see directory for results " + parentPath);
+    }
+
+    private void runReportTwoCreating(ExcelHandler excelHandler, WordHandler wordHandler, Label resultDir, File file, String parentPath) {
+        System.out.println("report two creating ...");
+        List<Project> projects = excelHandler.processExcelBasicInfoSheetIntoProjects(file);
+
+        for (Project c : projects) {
+            System.out.println(projects);
+            //wordHandler.processWordTemplate(c, parentPath);
         }
         resultDir.setText("Please see directory for results " + parentPath);
     }

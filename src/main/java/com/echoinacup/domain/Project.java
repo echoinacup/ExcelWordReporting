@@ -34,4 +34,32 @@ public class Project {
     private List<String> projectPictures = new ArrayList<>();
     private List<String> projectVideos = new ArrayList<>();
 
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "projectName='" + projectName + '\'' +
+                ", developmentConstructionCost='" + developmentConstructionCost + '\'' +
+                ", currency='" + currency + '\'' +
+                ", ownerCompany='" + ownerCompany + '\'' +
+                ", parentCompany='" + parentCompany + '\'' +
+                ", projectDeveloper='" + projectDeveloper + '\'' +
+                ", projectContractor='" + projectContractor + '\'' +
+                ", constructionDate='" + constructionDate + '\'' +
+                ", completionDate='" + completionDate + '\'' +
+                ", sector='" + sector + '\'' +
+                ", projectType='" + projectType + '\'' +
+                ", country='" + country + '\'' +
+                ", landOwnership='" + landOwnership + '\'' +
+                ", totalAreaSize='" + totalAreaSize + '\'' +
+                ", totalBuiltupArea='" + totalBuiltupArea + '\'' +
+                ", totalRentableArea='" + totalRentableArea + '\'' +
+                ", status='" + status + '\'' +
+                ", projectAddress='" + projectAddress + '\'' +
+                ", projectWebsite='" + projectWebsite + '\'' +
+                ", projectUpdates=" + projectUpdates +
+                ", projectPictures=" + projectPictures +
+                ", projectVideos=" + projectVideos +
+                '}';
+    }
 }

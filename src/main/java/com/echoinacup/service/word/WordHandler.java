@@ -32,7 +32,7 @@ public class WordHandler {
 
 
     public void processWordTemplate(Company company, String parentPath) {
-
+        System.out.println("processWordTemplate started");
         XWPFDocument resultReport;
         Map<String, String> placeholderMap = companyToWordTransformer(company);
         try {
@@ -41,8 +41,9 @@ public class WordHandler {
             replacePlaceHolder(resultReport, placeholderMap, company, parentPath);
 
         } catch (IOException e) {
-            LOGGER.info(e.getMessage());
+            System.out.println(e.getMessage());
         }
+        System.out.println("processWordTemplate finished");
     }
 
 
@@ -211,10 +212,10 @@ public class WordHandler {
     }
 
     private String insertSubsidiaries(List<String> subsidiaries) {
-        List<List<String>> subSets = Lists.partition(subsidiaries, 4);
+        List<List<String>> subSets = Lists.partition(subsidiaries, 4); //TODO add list of 4 elements
         Set<String> set = new HashSet<>();
         for (List<String> subSet : subSets) {
-            if (StringUtils.isNotEmpty(subSet.get(3))) {
+            if (subSet.size() == 4 && StringUtils.isNotEmpty(subSet.get(3))) {
                 set.add(subSet.get(3)); //TODO probably regex
             }
         }

@@ -11,8 +11,10 @@ public class HelpUtils {
         double amount = 0;
         DecimalFormat formatter = new DecimalFormat("#,###");
         if (StringUtils.isNotEmpty(value)) {
-            amount = Double.parseDouble(value);
+            String cut = value.replace(",", "");
+            amount = Double.parseDouble(cut);
         }
         return formatter.format(amount);
     }
+
 }
