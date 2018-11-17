@@ -32,14 +32,14 @@ public class WordHandler {
     }
 
 
-    public void processWordTemplateForCompanies(Company company,String templatePath, String parentPath) {
+    public void processWordTemplateForCompanies(Company company, String templatePath, String parentPath) {
         System.out.println("processWordTemplate started");
         XWPFDocument resultReport;
         Map<String, String> placeholderMap = companyToWordTransformer(company);
         try {
             resultReport = new XWPFDocument(fileService.readFile(templatePath));
 
-            replacePlaceHolder(resultReport, placeholderMap, company, parentPath);
+            replacePlaceHolderForCompany(resultReport, placeholderMap, company, parentPath);
 
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -50,61 +50,30 @@ public class WordHandler {
     public void processWordTemplateForProjects(Project project, String templatePath, String parentPath) {
         System.out.println("processWordTemplate started");
         XWPFDocument resultReport;
-//        Map<String, String> placeholderMap = companyToWordTransformer(company);
-//        try {
-//            resultReport = new XWPFDocument(fileService.readFile(templatePath));
-//
-//            replacePlaceHolder(resultReport, placeholderMap, company, parentPath);
-//
-//        } catch (IOException e) {
-//            System.out.println(e.getMessage());
-//        }
+        Map<String, String> placeholderMap = projectToWordTransformer(project);
+        try {
+            resultReport = new XWPFDocument(fileService.readFile(templatePath));
+
+            replacePlaceHolderForProject(resultReport, placeholderMap, project, parentPath);
+
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
         System.out.println("processWordTemplate finished");
     }
 
 
-    private XWPFDocument replacePlaceHolder(XWPFDocument resultReport,
-                                            Map<String, String> placeholderMap,
-                                            Company company,
-                                            String path) {
+    private XWPFDocument replacePlaceHolderForCompany(XWPFDocument resultReport,
+                                                      Map<String, String> placeholderMap,
+                                                      Company company,
+                                                      String path) {
 
         String name = company.getCorporateName().isEmpty() ? "" : company.getCorporateName();
 
         try (FileOutputStream out = new FileOutputStream(new File(path + File.separator + name + " report.docx"))) {
 
-            for (Map.Entry<String, String> entry : placeholderMap.entrySet()) {
+            basicReplacement(resultReport, placeholderMap);
 
-                String placeHolder = entry.getKey();
-                String replacement = entry.getValue();
-
-                for (XWPFParagraph p : resultReport.getParagraphs()) {
-                    List<XWPFRun> runs = p.getRuns();
-                    if (runs != null) {
-                        for (XWPFRun r : runs) {
-                            String text = r.getText(0);
-                            if (text != null && text.contains(placeHolder)) {
-                                text = text.replace(placeHolder, replacement);
-                                r.setText(text, 0);
-                            }
-                        }
-                    }
-                }
-                for (XWPFTable tbl : resultReport.getTables()) {
-                    for (XWPFTableRow row : tbl.getRows()) {
-                        for (XWPFTableCell cell : row.getTableCells()) {
-                            for (XWPFParagraph p : cell.getParagraphs()) {
-                                for (XWPFRun r : p.getRuns()) {
-                                    String text = r.getText(0);
-                                    if (text != null && text.contains(placeHolder)) {
-                                        text = text.replace(placeHolder, replacement);
-                                        r.setText(text, 0);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
             try {
                 XWPFTable tableSubsidiaries = resultReport.getTables().get(1);
                 XWPFTable tableActivities = resultReport.getTables().get(2);
@@ -128,6 +97,77 @@ public class WordHandler {
 
         }
         return resultReport;
+    }
+
+    private XWPFDocument replacePlaceHolderForProject(XWPFDocument resultReport,
+                                                      Map<String, String> placeholderMap,
+                                                      Project project,
+                                                      String path) {
+
+        String name = project.getProjectName().isEmpty() ? "" : project.getProjectName();
+
+        try (FileOutputStream out = new FileOutputStream(new File(path + File.separator + name + " report.docx"))) {
+
+            basicReplacement(resultReport, placeholderMap);
+            try {
+//                XWPFTable tableSubsidiaries = resultReport.getTables().get(1);
+//                XWPFTable tableActivities = resultReport.getTables().get(2);
+//                XWPFTable tableDataSource = resultReport.getTables().get(3);
+//                List<List<String>> subSets = Lists.partition(company.getSubsidiaries(), 4);
+//                List<List<String>> subSetsActivity = Lists.partition(company.getActivities(), 3);
+//                List<List<String>> subSetsDataSources = Lists.partition(company.getDataSources(), 1);
+//                addRowsToTable(tableSubsidiaries, subSets);
+//                addRowsToTableActivities(tableActivities, subSetsActivity);
+//                setStyleOfTableBorders(tableActivities);
+//                addRowsToTableDataSources(tableDataSource, subSetsDataSources);
+//                setStyleOfTableBorders(tableDataSource);
+
+                resultReport.write(out);
+                out.close();
+
+            } catch (IOException e) {
+                LOGGER.info(e.getMessage());
+            }
+        } catch (IOException ioe) {
+
+        }
+        return resultReport;
+    }
+
+    private void basicReplacement(XWPFDocument resultReport, Map<String, String> placeholderMap) {
+        for (Map.Entry<String, String> entry : placeholderMap.entrySet()) {
+
+            String placeHolder = entry.getKey();
+            String replacement = entry.getValue();
+
+            for (XWPFParagraph p : resultReport.getParagraphs()) {
+                List<XWPFRun> runs = p.getRuns();
+                if (runs != null) {
+                    for (XWPFRun r : runs) {
+                        String text = r.getText(0);
+                        if (text != null && text.contains(placeHolder)) {
+                            text = text.replace(placeHolder, replacement);
+                            r.setText(text, 0);
+                        }
+                    }
+                }
+            }
+            for (XWPFTable tbl : resultReport.getTables()) {
+                for (XWPFTableRow row : tbl.getRows()) {
+                    for (XWPFTableCell cell : row.getTableCells()) {
+                        for (XWPFParagraph p : cell.getParagraphs()) {
+                            for (XWPFRun r : p.getRuns()) {
+                                String text = r.getText(0);
+                                if (text != null && text.contains(placeHolder)) {
+                                    text = text.replace(placeHolder, replacement);
+                                    r.setText(text, 0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private Map<String, String> companyToWordTransformer(Company company) {
@@ -170,6 +210,41 @@ public class WordHandler {
                 company.getSubsidiaries()
         );
         placeholderMap.put("desc", desc);
+
+        return placeholderMap;
+
+    }
+
+    private Map<String, String> projectToWordTransformer(Project project) {
+        Map<String, String> placeholderMap = new LinkedHashMap<>();
+        placeholderMap.put("projName", project.getProjectName());
+        placeholderMap.put("devCost", project.getDevelopmentConstructionCost());
+        placeholderMap.put("ownComp", project.getOwnerCompany());
+        placeholderMap.put("parComp", project.getParentCompany());
+        placeholderMap.put("projDev", project.getProjectDeveloper());
+        placeholderMap.put("projContrct", project.getProjectContractor());
+        placeholderMap.put("constrctDate", project.getConstructionDate());
+        placeholderMap.put("complitDate", project.getCompletionDate());
+        placeholderMap.put("sect", project.getSector());
+        placeholderMap.put("projType", project.getProjectType());
+        placeholderMap.put("cntr", project.getCountry());
+        placeholderMap.put("lanOwn", project.getLandOwnership());
+        placeholderMap.put("totalArea", project.getTotalAreaSize());
+        placeholderMap.put("totalBldArea", project.getTotalBuiltupArea());
+        placeholderMap.put("totalRentArea", project.getTotalRentableArea());
+        placeholderMap.put("sts", project.getStatus());
+        placeholderMap.put("projAdrs", project.getProjectAddress());
+        placeholderMap.put("projLink", project.getProjectWebsite());
+
+//        String desc = fillDescription(project.getStatus(),
+//                project
+//                project
+//                project
+//                project
+//                project
+//                project
+//                project
+//        placeholderMap.put("desc", desc);
 
         return placeholderMap;
 

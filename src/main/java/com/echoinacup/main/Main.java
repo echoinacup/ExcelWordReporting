@@ -84,11 +84,10 @@ public class Main extends Application {
         System.out.println("report two creating ...");
         List<Project> projects = excelHandler.processExcelBasicInfoSheetIntoProjects(file);
         List<Project> resultProjects = excelHandler.processExcelTemplateSubsidiariesForProjects(projects, file);
-        System.out.println(resultProjects);
-//        for (Project c : resultProjects) {
-//            System.out.println(projects);
-//            wordHandler.processWordTemplateForProjects(c, pathToTemplateTwo, parentPath);
-//        }
+        for (Project c : resultProjects) {
+            System.out.println(projects);
+            wordHandler.processWordTemplateForProjects(c, pathToTemplateTwo, parentPath);
+        }
         resultDir.setText("Please see directory for results " + parentPath);
     }
 
