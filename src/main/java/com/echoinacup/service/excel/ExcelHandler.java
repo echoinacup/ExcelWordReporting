@@ -121,7 +121,7 @@ public class ExcelHandler {
         return entitiesMap;
     }
 
-    public List<Company> processExcelTemplateSubsidiariesForCompanies(List<Company> allCompanies, File file) { //Pass List of companies from the first sheet
+    public List<Company> processExcelTemplateSubsidiariesForCompanies(List<Company> allCompanies, File file) throws IllegalArgumentException { //Pass List of companies from the first sheet
         LOGGER.info("Process excel subsidiaries For Companies started ...");
         List<Company> resultList = new ArrayList<>();
         try {
@@ -134,16 +134,20 @@ public class ExcelHandler {
             int endIndex = 0;
 
             for (Company c : allCompanies) {
-                int index = map.get(c.getCorporateName());
+                try {
+                    int index = map.get(c.getCorporateName());
 
-                if (startIndex == 0 && endIndex == 0) {
-                    endIndex = index;
-                } else if (endIndex != 0) {
-                    startIndex = endIndex + 1;
-                    endIndex = index + startIndex - 1;
+                    if (startIndex == 0 && endIndex == 0) {
+                        endIndex = index;
+                    } else if (endIndex != 0) {
+                        startIndex = endIndex + 1;
+                        endIndex = index + startIndex - 1;
+                    }
+                    addSubToCompany(spreadsheet, c, startIndex, endIndex);
+                    resultList.add(c);
+                } catch (NullPointerException e) {
+                    throw new IllegalArgumentException("Can not find company with name " + c.getCorporateName());
                 }
-                addSubToCompany(spreadsheet, c, startIndex, endIndex);
-                resultList.add(c);
             }
 
         } catch (IOException | InvalidFormatException e) {
@@ -153,7 +157,7 @@ public class ExcelHandler {
         return resultList;
     }
 
-    public List<Project> processExcelTemplateSubsidiariesForProjects(List<Project> allProjects, File file) { //Pass List of companies from the first sheet
+    public List<Project> processExcelTemplateSubsidiariesForProjects(List<Project> allProjects, File file) throws IllegalArgumentException { //Pass List of companies from the first sheet
         LOGGER.info("Subsidiaries sheet for Second report started ...");
         List<Project> resultList = new ArrayList<>();
         try {
@@ -166,16 +170,20 @@ public class ExcelHandler {
             int endIndex = 0;
 
             for (Project p : allProjects) {
-                int index = map.get(p.getProjectName());
+                try {
+                    int index = map.get(p.getProjectName());
 
-                if (startIndex == 0 && endIndex == 0) {
-                    endIndex = index;
-                } else if (endIndex != 0) {
-                    startIndex = endIndex + 1;
-                    endIndex = index + startIndex - 1;
+                    if (startIndex == 0 && endIndex == 0) {
+                        endIndex = index;
+                    } else if (endIndex != 0) {
+                        startIndex = endIndex + 1;
+                        endIndex = index + startIndex - 1;
+                    }
+                    addSubToProjects(spreadsheet, p, startIndex, endIndex);
+                    resultList.add(p);
+                } catch (NullPointerException e) {
+                    throw new IllegalArgumentException("Can not find company with name " + p.getProjectName());
                 }
-                addSubToProjects(spreadsheet, p, startIndex, endIndex);
-                resultList.add(p);
             }
 
         } catch (IOException | InvalidFormatException e) {
@@ -319,7 +327,6 @@ public class ExcelHandler {
     }
 
     private boolean handleEmptyRow(XSSFRow r) {
-        //TODO handle all cells
         if (r == null) {
             return true;
         } else if (isRowWithEmptyFields(r)) {
@@ -374,7 +381,6 @@ public class ExcelHandler {
                         strCellValue = dec.format(value) + "%";
                     } else {
                         Double value = cell.getNumericCellValue();
-//                        Long longValue = value.longValue();
                         strCellValue = value.toString();
                     }
                     break;

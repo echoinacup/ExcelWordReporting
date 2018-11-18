@@ -68,8 +68,8 @@ public class Main extends Application {
             String parentPath = file.getParent();
             try {
                 runReportOneCreating(excelHandler, wordHandler, resultDirLbl, file, parentPath);
-            } catch (NumberFormatException nfe) {
-                createExceptionForMessage(alert, nfe);
+            } catch (Exception e) {
+                createExceptionForMessage(alert, e);
             }
         });
 
@@ -80,8 +80,8 @@ public class Main extends Application {
             String parentPath = file.getParent();
             try {
                 runReportTwoCreating(excelHandler, wordHandler, resultDirLbl, file, parentPath);
-            } catch (NumberFormatException nfe) {
-                createExceptionForMessage(alert, nfe);
+            } catch (Exception e) {
+                createExceptionForMessage(alert, e);
             }
         });
 
