@@ -29,8 +29,10 @@ public class Project {
     private String status;
     private String projectAddress;
     private String projectWebsite;
+    private String projectLatitude;
+    private String projectLongitude;
 
-    private List<String> projectUpdates = new ArrayList<>(); //TODO last element could be separated
+    private List<String> projectActivities = new ArrayList<>();
     private List<String> projectPictures = new ArrayList<>();
     private List<String> projectVideos = new ArrayList<>();
     private List<String> dataSources = new ArrayList<>();
@@ -58,10 +60,12 @@ public class Project {
                 ", status='" + status + '\'' +
                 ", projectAddress='" + projectAddress + '\'' +
                 ", projectWebsite='" + projectWebsite + '\'' +
-                ", projectUpdates=" + projectUpdates +
+                ", projectLatitude='" + projectLatitude + '\'' +
+                ", projectLongitude='" + projectLongitude + '\'' +
+                ", projectActivities=" + projectActivities +
                 ", projectPictures=" + projectPictures +
                 ", projectVideos=" + projectVideos +
-                ", getDataSources=" + dataSources +
+                ", dataSources=" + dataSources +
                 '}';
     }
 }

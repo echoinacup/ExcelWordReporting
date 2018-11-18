@@ -263,8 +263,6 @@ public class ExcelHandler {
                     if (!PROJECT_VIDEOS_HEADER.equals(str)) {
                         if (StringUtils.isNotEmpty(str)) {
                             project.getProjectPictures().add(str);
-                        } else {
-                            project.getProjectPictures().add("");
                         }
                     } else {
                         isPictures = false;
@@ -275,8 +273,6 @@ public class ExcelHandler {
                     if (!StringUtils.equals(DATE_HEADER, str)) {
                         if (StringUtils.isNotEmpty(str)) {
                             project.getProjectVideos().add(str);
-                        } else {
-                            project.getProjectVideos().add("");
                         }
                     } else {
                         isProjectsVideos = false;
@@ -286,9 +282,7 @@ public class ExcelHandler {
                 } else if (isActivities) {
                     if (!StringUtils.equals(DATA_SOURCES_HEADER, str)) {
                         if (StringUtils.isNotEmpty(str)) {
-                            project.getProjectVideos().add(str);
-                        } else {
-                            project.getProjectVideos().add("");
+                            project.getProjectActivities().add(str);
                         }
                     } else {
                         isActivities = false;
@@ -448,6 +442,8 @@ public class ExcelHandler {
         project.setStatus(valueMap.get(keyProjectStatus));
         project.setProjectAddress(valueMap.get(keyProjectAddress));
         project.setProjectWebsite(valueMap.get(keyProjectWebSite));
+        project.setProjectLatitude(valueMap.get(keyLatitude));
+        project.setProjectLongitude(valueMap.get(keyLongitude));
         return project;
     }
 

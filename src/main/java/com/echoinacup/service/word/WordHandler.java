@@ -110,17 +110,23 @@ public class WordHandler {
 
             basicReplacement(resultReport, placeholderMap);
             try {
-//                XWPFTable tableSubsidiaries = resultReport.getTables().get(1);
-//                XWPFTable tableActivities = resultReport.getTables().get(2);
-//                XWPFTable tableDataSource = resultReport.getTables().get(3);
-//                List<List<String>> subSets = Lists.partition(company.getSubsidiaries(), 4);
-//                List<List<String>> subSetsActivity = Lists.partition(company.getActivities(), 3);
-//                List<List<String>> subSetsDataSources = Lists.partition(company.getDataSources(), 1);
-//                addRowsToTable(tableSubsidiaries, subSets);
-//                addRowsToTableActivities(tableActivities, subSetsActivity);
-//                setStyleOfTableBorders(tableActivities);
-//                addRowsToTableDataSources(tableDataSource, subSetsDataSources);
-//                setStyleOfTableBorders(tableDataSource);
+
+                XWPFTable tableNews = resultReport.getTables().get(1);
+                XWPFTable tablePictures = resultReport.getTables().get(2);
+                XWPFTable tableVideos = resultReport.getTables().get(3);
+                XWPFTable tableDataSources = resultReport.getTables().get(5);
+                List<List<String>> subSetsActivity = Lists.partition(project.getProjectActivities(), 3);
+                List<List<String>> subSetsPictures = Lists.partition(project.getProjectPictures(), 1);
+                List<List<String>> subSetsVideos = Lists.partition(project.getProjectVideos(), 1);
+                List<List<String>> subSetsDataSources = Lists.partition(project.getDataSources(), 1);
+                addRowsToTableActivities(tableNews, subSetsActivity);
+                setStyleOfTableBorders(tableNews);
+                addRowsToTableDataSources(tablePictures, subSetsPictures);
+                setStyleOfTableBorders(tablePictures);
+                addRowsToTableDataSources(tableVideos, subSetsVideos);
+                setStyleOfTableBorders(tableVideos);
+                addRowsToTableDataSources(tableDataSources, subSetsDataSources);
+                setStyleOfTableBorders(tableDataSources);
 
                 resultReport.write(out);
                 out.close();
@@ -235,6 +241,8 @@ public class WordHandler {
         placeholderMap.put("sts", project.getStatus());
         placeholderMap.put("projAdrs", project.getProjectAddress());
         placeholderMap.put("projLink", project.getProjectWebsite());
+        placeholderMap.put("lat", project.getProjectLatitude());//TODO formatting
+        placeholderMap.put("long", project.getProjectLongitude());
 
 //        String desc = fillDescription(project.getStatus(),
 //                project
