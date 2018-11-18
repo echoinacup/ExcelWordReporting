@@ -16,11 +16,13 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Logger;
 
 import static com.echoinacup.utils.ExcelHeader.*;
 
 public class ExcelHandler {
 
+    private final static Logger LOGGER = Logger.getLogger(ExcelHandler.class.getName());
 
     private static MissingCellPolicy xRow;
     private static final int BASIC_INFO_SHEET_FIRST_REPORT = 1;
@@ -120,7 +122,7 @@ public class ExcelHandler {
     }
 
     public List<Company> processExcelTemplateSubsidiariesForCompanies(List<Company> allCompanies, File file) { //Pass List of companies from the first sheet
-        System.out.println("processExcelTemplateSubsidiariesForCompanies started ...");
+        LOGGER.info("Process excel subsidiaries For Companies started ...");
         List<Company> resultList = new ArrayList<>();
         try {
             XSSFWorkbook workbook = new XSSFWorkbook(file);
@@ -145,14 +147,14 @@ public class ExcelHandler {
             }
 
         } catch (IOException | InvalidFormatException e) {
-            System.out.println(e.getMessage());
+            LOGGER.info(e.getMessage());
         }
-        System.out.println("processExcelTemplateSubsidiariesForCompanies finished");
+        LOGGER.info("Process excel subsidiaries For Companies finished");
         return resultList;
     }
 
     public List<Project> processExcelTemplateSubsidiariesForProjects(List<Project> allProjects, File file) { //Pass List of companies from the first sheet
-        System.out.println("processExcelTemplateSubsidiariesForProjects started ...");
+        LOGGER.info("Subsidiaries sheet for Second report started ...");
         List<Project> resultList = new ArrayList<>();
         try {
             XSSFWorkbook workbook = new XSSFWorkbook(file);
@@ -177,9 +179,9 @@ public class ExcelHandler {
             }
 
         } catch (IOException | InvalidFormatException e) {
-            System.out.println(e.getMessage());
+            LOGGER.info(e.getMessage());
         }
-        System.out.println("processExcelTemplateSubsidiariesForCompanies finished");
+        LOGGER.info("Subsidiaries sheet for Second report started finished");
         return resultList;
     }
 
@@ -340,7 +342,6 @@ public class ExcelHandler {
 
     private void fillInDescriptionMapWithKeys(XSSFRow r, Map<String, String> headerMap) {
         for (int i = 0; i < r.getLastCellNum(); i++) {
-            System.out.println("fill in desc map r num " + i);
             Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
             if (cell != null) {
                 String value = cell.getStringCellValue();
@@ -373,8 +374,8 @@ public class ExcelHandler {
                         strCellValue = dec.format(value) + "%";
                     } else {
                         Double value = cell.getNumericCellValue();
-                        Long longValue = value.longValue();
-                        strCellValue = longValue.toString();
+//                        Long longValue = value.longValue();
+                        strCellValue = value.toString();
                     }
                     break;
                 case BOOLEAN:
@@ -435,6 +436,9 @@ public class ExcelHandler {
         project.setSector(valueMap.get(keySector));
         project.setProjectType(valueMap.get(keyProjectType));
         project.setCountry(valueMap.get(keyCountry));
+        project.setCity(valueMap.get(keyCity));
+        project.setConstructionComprises(valueMap.get(keyConstructionComprises));
+        project.setAdditionalArea(valueMap.get(keyOtherAreasMentiond));
         project.setLandOwnership(valueMap.get(keyLandOwnership));
         project.setTotalAreaSize(valueMap.get(keyTotalAreaSize));
         project.setTotalBuiltupArea(valueMap.get(keyTotalBuiltUpArea));

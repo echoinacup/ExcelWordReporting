@@ -17,7 +17,9 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import static com.echoinacup.service.word.WordUtils.*;
-import static com.echoinacup.utils.HelpUtils.formatString;
+import static com.echoinacup.utils.HelpUtils.formatStringToLatitude;
+import static com.echoinacup.utils.HelpUtils.formatStringToNumber;
+import static com.echoinacup.utils.HelpUtils.formatToSqrMeters;
 
 public class WordHandler {
 
@@ -33,7 +35,7 @@ public class WordHandler {
 
 
     public void processWordTemplateForCompanies(Company company, String templatePath, String parentPath) {
-        System.out.println("processWordTemplate started");
+        LOGGER.info("processWordTemplate started");
         XWPFDocument resultReport;
         Map<String, String> placeholderMap = companyToWordTransformer(company);
         try {
@@ -44,11 +46,11 @@ public class WordHandler {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        System.out.println("processWordTemplate finished");
+        LOGGER.info("processWordTemplate finished");
     }
 
     public void processWordTemplateForProjects(Project project, String templatePath, String parentPath) {
-        System.out.println("processWordTemplate started");
+        LOGGER.info("processWordTemplate started");
         XWPFDocument resultReport;
         Map<String, String> placeholderMap = projectToWordTransformer(project);
         try {
@@ -57,9 +59,9 @@ public class WordHandler {
             replacePlaceHolderForProject(resultReport, placeholderMap, project, parentPath);
 
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            LOGGER.info(e.getMessage());
         }
-        System.out.println("processWordTemplate finished");
+        LOGGER.info("processWordTemplate finished");
     }
 
 
@@ -180,9 +182,9 @@ public class WordHandler {
         Map<String, String> placeholderMap = new LinkedHashMap<>();
         placeholderMap.put("title", company.getCorporateName());
         placeholderMap.put("corpName", company.getCorporateName());
-        placeholderMap.put("paidUpCapital", formatString(company.getPaidupCapital()));
+        placeholderMap.put("paidUpCapital", formatStringToNumber(company.getPaidupCapital()));
         placeholderMap.put("shareParValue", company.getShareParValue());
-        placeholderMap.put("numberOfShares", formatString(company.getNumberOfShares()));
+        placeholderMap.put("numberOfShares", formatStringToNumber(company.getNumberOfShares()));
         placeholderMap.put("legalStructure", company.getLegalStructure());
         placeholderMap.put("currency", company.getCurrency());
         placeholderMap.put("inceptionDate", company.getInceptionDate());
@@ -235,24 +237,26 @@ public class WordHandler {
         placeholderMap.put("projType", project.getProjectType());
         placeholderMap.put("cntr", project.getCountry());
         placeholderMap.put("lanOwn", project.getLandOwnership());
-        placeholderMap.put("totalArea", project.getTotalAreaSize());
-        placeholderMap.put("totalBldArea", project.getTotalBuiltupArea());
-        placeholderMap.put("totalRentArea", project.getTotalRentableArea());
+        placeholderMap.put("totalArea", formatToSqrMeters(project.getTotalAreaSize()));
+        placeholderMap.put("totalBldArea", formatToSqrMeters(project.getTotalBuiltupArea()));
+        placeholderMap.put("totalRentArea", formatToSqrMeters(project.getTotalRentableArea()));
         placeholderMap.put("sts", project.getStatus());
         placeholderMap.put("projAdrs", project.getProjectAddress());
         placeholderMap.put("projLink", project.getProjectWebsite());
-        placeholderMap.put("lat", project.getProjectLatitude());//TODO formatting
-        placeholderMap.put("long", project.getProjectLongitude());
+        placeholderMap.put("lat", formatStringToLatitude(project.getProjectLatitude()));
+        placeholderMap.put("long", formatStringToLatitude(project.getProjectLongitude()));
 
-//        String desc = fillDescription(project.getStatus(),
-//                project
-//                project
-//                project
-//                project
-//                project
-//                project
-//                project
-//        placeholderMap.put("desc", desc);
+        String desc = fillDescriptionForProject(
+                project.getCity(),
+                project.getCountry(),
+                project.getProjectName(),
+                project.getConstructionComprises(),
+                project.getSector(),
+                project.getTotalAreaSize(),
+                project.getTotalRentableArea(),
+                project.getAdditionalArea(),
+                project.getCompletionDate());
+        placeholderMap.put("tmplDesc", desc);
 
         return placeholderMap;
 
@@ -283,7 +287,7 @@ public class WordHandler {
         String sentencePublic = corporateName + " is a public company listed on the " + stockExchangeName + " since " + listingDate + ".";
         String sentencePrivate = "" + corporateName + " is a private company.";
 
-        StringBuilder sb = new StringBuilder(); //TODO to think a bit
+        StringBuilder sb = new StringBuilder();
         sb.append(StringUtils.isNotEmpty(sentence1) ? sentence1 : "");
         sb.append(sentence11);
         sb.append(sentence2);
@@ -388,6 +392,34 @@ public class WordHandler {
 
     }
 
-    String projectDescr = "Located in Riyadh, Saudi Arabia. Al Qasr Mall is a commercial mall comprised of four floors with more than 350 retail stores and a parking capacity for 1,846 cars. The retail facilities total area-size is about 250,000 square meters while the leasing area is 85,000 square meter in addition to 35,000 square meter of open spaces. Al Qasr Mall was completed on 31 January 2012.";
+    private String fillDescriptionForProject(
+            String city,
+            String country,
+            String projectName,
+            String constructionComprises,
+            String sector,
+            String totalAreaSize,
+            String totalRentableArea,
+            String additionalArea,
+            String completionDate
 
+    ) {
+        String sentence1 = "Located in " + city + "," + country + ". ";
+        String sentence2 = projectName + "is a " + constructionComprises + ". ";
+        String sentence3 = sector + " total area-size is about " + totalAreaSize + " square meters ";
+        String sentence31 = "while the leasing area is " + totalRentableArea + " square meter ";
+        String sentence32 = "in addition to " + additionalArea + " square meter of open spaces. ";
+        String sentence4 = projectName + " was completed on " + completionDate + ".";
+
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(sentence1);
+        sb.append(sentence2);
+        sb.append(sentence3);
+        sb.append(StringUtils.isNotEmpty(totalRentableArea) ? sentence31 : StringUtils.isEmpty(additionalArea) ? "." : " ");
+        sb.append(StringUtils.isNotEmpty(additionalArea) ? sentence32 : ".");
+        sb.append(sentence4);
+
+        return sb.toString();
+    }
 }
