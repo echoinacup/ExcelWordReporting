@@ -299,6 +299,37 @@ public class WordHandler {
 
         return sb.toString();
     }
+    
+    private String fillDescriptionForProject(
+            String city,
+            String country,
+            String projectName,
+            String constructionComprises,
+            String sector,
+            String totalAreaSize,
+            String totalRentableArea,
+            String additionalArea,
+            String completionDate
+
+    ) {
+        String sentence1 = "Located in " + city + "," + country + ". ";
+        String sentence2 = projectName + "is a " + constructionComprises + ". ";
+        String sentence3 = sector + " total area-size is about " + totalAreaSize + " square meters ";
+        String sentence31 = "while the leasing area is " + totalRentableArea + " square meter ";
+        String sentence32 = "in addition to " + additionalArea + " square meter of open spaces. ";
+        String sentence4 = projectName + " was completed on " + completionDate + ".";
+
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(sentence1);
+        sb.append(sentence2);
+        sb.append(sentence3);
+        sb.append(StringUtils.isNotEmpty(totalRentableArea) ? sentence31 : StringUtils.isEmpty(additionalArea) ? "." : " ");
+        sb.append(StringUtils.isNotEmpty(additionalArea) ? sentence32 : ".");
+        sb.append(sentence4);
+
+        return sb.toString();
+    }
 
     private String cutExtraDescForDetails(String detailsOfServicesOffered) {
         String extraProvides = "provides";
@@ -390,36 +421,5 @@ public class WordHandler {
         }
         tbl.removeRow(0);
 
-    }
-
-    private String fillDescriptionForProject(
-            String city,
-            String country,
-            String projectName,
-            String constructionComprises,
-            String sector,
-            String totalAreaSize,
-            String totalRentableArea,
-            String additionalArea,
-            String completionDate
-
-    ) {
-        String sentence1 = "Located in " + city + "," + country + ". ";
-        String sentence2 = projectName + "is a " + constructionComprises + ". ";
-        String sentence3 = sector + " total area-size is about " + totalAreaSize + " square meters ";
-        String sentence31 = "while the leasing area is " + totalRentableArea + " square meter ";
-        String sentence32 = "in addition to " + additionalArea + " square meter of open spaces. ";
-        String sentence4 = projectName + " was completed on " + completionDate + ".";
-
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(sentence1);
-        sb.append(sentence2);
-        sb.append(sentence3);
-        sb.append(StringUtils.isNotEmpty(totalRentableArea) ? sentence31 : StringUtils.isEmpty(additionalArea) ? "." : " ");
-        sb.append(StringUtils.isNotEmpty(additionalArea) ? sentence32 : ".");
-        sb.append(sentence4);
-
-        return sb.toString();
     }
 }

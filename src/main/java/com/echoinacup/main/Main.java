@@ -41,26 +41,28 @@ public class Main extends Application {
         Button buttonForReportTwo = new Button("Process Report TwO");
         Label chosen = new Label();
         Label chosen2 = new Label();
-        Label resultDir = new Label();
+        Label resultDirLbl = new Label();
 
         buttonForReportOne.setOnAction(event -> chooseFileAndSetPath(primaryStage, chosen));
         buttonForReportTwo.setOnAction(event -> chooseFileAndSetPath(primaryStage, chosen2));
 
         HBox hBox = new HBox(10, buttonForReportOne, buttonForReportTwo);
-        VBox layout = new VBox(10, hBox, chosen, resultDir);
+        VBox layout = new VBox(10, hBox, chosen, resultDirLbl);
 
         chosen.textProperty().addListener((ov, t, t1) -> {
+
             LOGGER.info("report 1 creating");
             File file = new File(chosen.getText());
             String parentPath = file.getParent();
-            runReportOneCreating(excelHandler, wordHandler, resultDir, file, parentPath);
+            runReportOneCreating(excelHandler, wordHandler, resultDirLbl, file, parentPath);
         });
 
         chosen2.textProperty().addListener((ov, t, t1) -> {
+            resultDirLbl.setText("");
             LOGGER.info("report 2 creating");
             File file = new File(chosen2.getText());
             String parentPath = file.getParent();
-            runReportTwoCreating(excelHandler, wordHandler, resultDir, file, parentPath);
+            runReportTwoCreating(excelHandler, wordHandler, resultDirLbl, file, parentPath);
         });
 
         layout.setMinWidth(400);
