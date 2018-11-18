@@ -34,7 +34,7 @@ public class WordHandler {
     }
 
 
-    public void processWordTemplateForCompanies(Company company, String templatePath, String parentPath) {
+    public void processWordTemplateForCompanies(Company company, String templatePath, String parentPath) throws NumberFormatException {
         LOGGER.info("processWordTemplate started");
         XWPFDocument resultReport;
         Map<String, String> placeholderMap = companyToWordTransformer(company);
@@ -49,7 +49,7 @@ public class WordHandler {
         LOGGER.info("processWordTemplate finished");
     }
 
-    public void processWordTemplateForProjects(Project project, String templatePath, String parentPath) {
+    public void processWordTemplateForProjects(Project project, String templatePath, String parentPath) throws NumberFormatException {
         LOGGER.info("processWordTemplate started");
         XWPFDocument resultReport;
         Map<String, String> placeholderMap = projectToWordTransformer(project);
@@ -178,7 +178,7 @@ public class WordHandler {
         }
     }
 
-    private Map<String, String> companyToWordTransformer(Company company) {
+    private Map<String, String> companyToWordTransformer(Company company) throws NumberFormatException {
         Map<String, String> placeholderMap = new LinkedHashMap<>();
         placeholderMap.put("title", company.getCorporateName());
         placeholderMap.put("corpName", company.getCorporateName());
@@ -223,7 +223,7 @@ public class WordHandler {
 
     }
 
-    private Map<String, String> projectToWordTransformer(Project project) {
+    private Map<String, String> projectToWordTransformer(Project project) throws NumberFormatException {
         Map<String, String> placeholderMap = new LinkedHashMap<>();
         placeholderMap.put("projName", project.getProjectName());
         placeholderMap.put("devCost", project.getDevelopmentConstructionCost());
@@ -299,7 +299,7 @@ public class WordHandler {
 
         return sb.toString();
     }
-    
+
     private String fillDescriptionForProject(
             String city,
             String country,
