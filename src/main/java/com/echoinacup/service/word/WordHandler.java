@@ -72,7 +72,7 @@ public class WordHandler {
 
         String name = company.getCorporateName().isEmpty() ? "" : company.getCorporateName();
 
-        try (FileOutputStream out = new FileOutputStream(new File(path + File.separator + name + " report.docx"))) {
+        try (FileOutputStream out = new FileOutputStream(new File(path + File.separator + name + " .docx"))) {
 
             basicReplacement(resultReport, placeholderMap);
 
@@ -277,6 +277,7 @@ public class WordHandler {
                                    List<String> subsidiaries) {
 
         // always have company name, city and country and sector.
+        subsidiaries.removeAll(Arrays.asList(null, "", " "));
 
         String sentence1 = "Incorporated in " + inceptionDate;
         String sentence11 = " with headquarters in " + city + ", " + country + ". ";

@@ -49,8 +49,8 @@ public class Main extends Application {
         alert.setContentText("Format of the value is incorrect");
 
 
-        Button buttonForReportOne = new Button("Process Report One");
-        Button buttonForReportTwo = new Button("Process Report TwO");
+        Button buttonForReportOne = new Button("Private + Public");
+        Button buttonForReportTwo = new Button("Projects");
         Label chosen = new Label();
         Label chosen2 = new Label();
         Label resultDirLbl = new Label();

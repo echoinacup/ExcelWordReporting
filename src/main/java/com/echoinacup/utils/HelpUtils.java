@@ -2,7 +2,11 @@ package com.echoinacup.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
+import javax.management.AttributeList;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class HelpUtils {
 
