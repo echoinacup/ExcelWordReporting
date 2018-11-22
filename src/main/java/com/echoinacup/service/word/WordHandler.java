@@ -17,9 +17,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import static com.echoinacup.service.word.WordUtils.*;
-import static com.echoinacup.utils.HelpUtils.formatStringToLatitude;
-import static com.echoinacup.utils.HelpUtils.formatStringNumberWithDelimiters;
-import static com.echoinacup.utils.HelpUtils.formatToSqrMeters;
+import static com.echoinacup.utils.HelpUtils.*;
 
 public class WordHandler {
 
@@ -290,7 +288,11 @@ public class WordHandler {
 
         StringBuilder sb = new StringBuilder();
         sb.append(StringUtils.isNotEmpty(sentence1) ? sentence1 : "");
-        sb.append(sentence11);
+        if (StringUtils.isNotEmpty(city) && StringUtils.isNotEmpty(country)) {
+            sb.append(sentence11);
+        } else {
+            sb.append(".");
+        }
         sb.append(sentence2);
         sb.append(StringUtils.isNotEmpty(productsServicesOffered) ? sentence3 : "");
         sb.append(StringUtils.isNotEmpty(detailsOfServicesOffered) ? sentence4 : "");
@@ -313,21 +315,25 @@ public class WordHandler {
             String completionDate
 
     ) {
-        String sentence1 = "Located in " + city + "," + country + ". ";
-        String sentence2 = projectName + "is a " + constructionComprises + ". ";
-        String sentence3 = sector + " total area-size is about " + totalAreaSize + " square meters ";
-        String sentence31 = "while the leasing area is " + totalRentableArea + " square meter ";
-        String sentence32 = "in addition to " + additionalArea + " square meter of open spaces. ";
+        String sentence1 = "Located in " + city + ", " + country + ". ";
+        String sentence2 = projectName + " is a " + constructionComprises + ". ";
+        String sentence3 = sector + " total area-size is about " + formatThousands(totalAreaSize) + " square meters";
+        String sentence31 = "while the leasing area is " + formatThousands(totalRentableArea) + " square meter ";
+        String sentence32 = "in addition to " + formatThousands(additionalArea) + " square meter of open spaces. ";
         String sentence4 = projectName + " was completed on " + completionDate + ".";
 
 
         StringBuilder sb = new StringBuilder();
         sb.append(sentence1);
-        sb.append(sentence2);
+        if (StringUtils.isNotEmpty(projectName) && StringUtils.isNotEmpty(constructionComprises)) {
+            sb.append(sentence2);
+        }
         sb.append(sentence3);
         sb.append(StringUtils.isNotEmpty(totalRentableArea) ? sentence31 : StringUtils.isEmpty(additionalArea) ? "." : " ");
         sb.append(StringUtils.isNotEmpty(additionalArea) ? sentence32 : ".");
-        sb.append(sentence4);
+        if (StringUtils.isNotEmpty(projectName) && StringUtils.isNotEmpty(completionDate)) {
+            sb.append(sentence4);
+        }
 
         return sb.toString();
     }

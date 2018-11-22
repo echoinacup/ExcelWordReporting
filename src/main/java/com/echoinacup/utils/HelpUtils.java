@@ -3,6 +3,9 @@ package com.echoinacup.utils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class HelpUtils {
 
@@ -29,5 +32,17 @@ public class HelpUtils {
             amount = Double.parseDouble(value);
         }
         return formatter.format(amount) + " sq. m";
+    }
+
+    public static String formatThousands(String value) {
+        if (StringUtils.isNotEmpty(value)) {
+            DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+            DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
+
+            symbols.setGroupingSeparator(' ');
+            formatter.setDecimalFormatSymbols(symbols);
+            return formatter.format(Long.valueOf(value));
+        }
+        return "";
     }
 }
