@@ -13,6 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -381,7 +382,8 @@ public class ExcelHandler {
                         strCellValue = dec.format(value) + "%";
                     } else {
                         Double value = cell.getNumericCellValue();
-                        strCellValue = value.toString();
+                        strCellValue = new BigDecimal(value).toPlainString();
+//                        strCellValue = value.toString();
                     }
                     break;
                 case BOOLEAN:

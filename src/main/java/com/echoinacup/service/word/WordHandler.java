@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 import static com.echoinacup.service.word.WordUtils.*;
 import static com.echoinacup.utils.HelpUtils.formatStringToLatitude;
-import static com.echoinacup.utils.HelpUtils.formatStringToNumber;
+import static com.echoinacup.utils.HelpUtils.formatStringNumberWithDelimiters;
 import static com.echoinacup.utils.HelpUtils.formatToSqrMeters;
 
 public class WordHandler {
@@ -182,9 +182,9 @@ public class WordHandler {
         Map<String, String> placeholderMap = new LinkedHashMap<>();
         placeholderMap.put("title", company.getCorporateName());
         placeholderMap.put("corpName", company.getCorporateName());
-        placeholderMap.put("paidUpCapital", formatStringToNumber(company.getPaidupCapital()));
+        placeholderMap.put("paidUpCapital", formatStringNumberWithDelimiters(company.getPaidupCapital()));
         placeholderMap.put("shareParValue", company.getShareParValue());
-        placeholderMap.put("numberOfShares", formatStringToNumber(company.getNumberOfShares()));
+        placeholderMap.put("numberOfShares", formatStringNumberWithDelimiters(company.getNumberOfShares()));
         placeholderMap.put("legalStructure", company.getLegalStructure());
         placeholderMap.put("currency", company.getCurrency());
         placeholderMap.put("inceptionDate", company.getInceptionDate());
@@ -226,7 +226,7 @@ public class WordHandler {
     private Map<String, String> projectToWordTransformer(Project project) throws NumberFormatException {
         Map<String, String> placeholderMap = new LinkedHashMap<>();
         placeholderMap.put("projName", project.getProjectName());
-        placeholderMap.put("devCost", project.getDevelopmentConstructionCost());
+        placeholderMap.put("devCost", formatStringNumberWithDelimiters(project.getDevelopmentConstructionCost()));
         placeholderMap.put("ownComp", project.getOwnerCompany());
         placeholderMap.put("parComp", project.getParentCompany());
         placeholderMap.put("projDev", project.getProjectDeveloper());

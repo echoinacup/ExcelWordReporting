@@ -2,16 +2,12 @@ package com.echoinacup.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
-import javax.management.AttributeList;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class HelpUtils {
 
 
-    public static String formatStringToNumber(String value) throws NumberFormatException {
+    public static String formatStringNumberWithDelimiters(String value) throws NumberFormatException {
         double amount = 0;
         DecimalFormat formatter = new DecimalFormat("#,###");
         if (StringUtils.isNotEmpty(value)) {
@@ -22,10 +18,8 @@ public class HelpUtils {
     }
 
     public static String formatStringToLatitude(String value) throws NumberFormatException {
-        double amount = 0;
         DecimalFormat formatter = new DecimalFormat("0.000000");
-        amount = Double.parseDouble(value);
-        return formatter.format(amount);
+        return formatter.format(Double.parseDouble(value)).replace(',', '.');
     }
 
     public static String formatToSqrMeters(String value) throws NumberFormatException {
