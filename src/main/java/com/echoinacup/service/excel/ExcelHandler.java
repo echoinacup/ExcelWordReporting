@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import static com.echoinacup.utils.ExcelHeader.*;
+import static com.echoinacup.utils.HelpUtils.trimWithNonBrackeSpace;
 
 public class ExcelHandler {
 
@@ -210,13 +211,14 @@ public class ExcelHandler {
                 Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
                 String str = getCellValueAsString(cell);
 
+
                 if (isSubsidiary) {
                     if (!DATE_HEADER.equals(str)) {
-                        if (StringUtils.isNotEmpty(str)) {
-                            company.getSubsidiaries().add(str);
-                        } else {
-                            company.getSubsidiaries().add("");
+                        company.getSubsidiaries().add(str);
+                        if (i == 5) {
+                            company.getSubCountries().add(str);
                         }
+
                     } else {
                         isSubsidiary = false;
                         isActivities = true;
@@ -224,11 +226,7 @@ public class ExcelHandler {
                     }
                 } else if (isActivities) {
                     if (!StringUtils.equals(DATA_SOURCES_HEADER, str)) {
-                        if (StringUtils.isNotEmpty(str)) {
-                            company.getActivities().add(str);
-                        } else {
-                            company.getActivities().add("");
-                        }
+                        company.getActivities().add(str);
                     } else {
                         isActivities = false;
                         isDataSources = true;
@@ -236,19 +234,13 @@ public class ExcelHandler {
                     }
                 } else if (isDataSources) {
                     if (!SUBSIDIARY_HEADER.equals(str)) {
-                        if (StringUtils.isNotEmpty(str)) {
-                            company.getDataSources().add(str);
-                        } else {
-                            company.getDataSources().add("");
-                        }
+                        company.getDataSources().add(str);
                     } else {
                         isDataSources = false;
                         isSubsidiary = true;
                         continue start;
                     }
                 }
-
-
             }
         }
     }
@@ -365,11 +357,11 @@ public class ExcelHandler {
      * returns it as a string.
      */
     public static String getCellValueAsString(Cell cell) {
-        String strCellValue = null;
+        String strCellValue = "";
         if (cell != null) {
             switch (cell.getCellTypeEnum()) {
                 case STRING:
-                    strCellValue = cell.toString().trim();
+                    strCellValue = trimWithNonBrackeSpace(cell.toString());
                     break;
                 case NUMERIC:
                     if (DateUtil.isCellDateFormatted(cell)) {
@@ -383,7 +375,6 @@ public class ExcelHandler {
                     } else {
                         Double value = cell.getNumericCellValue();
                         strCellValue = new BigDecimal(value).toPlainString();
-//                        strCellValue = value.toString();
                     }
                     break;
                 case BOOLEAN:

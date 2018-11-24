@@ -6,7 +6,9 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -41,6 +43,7 @@ public class Company {
 
 
     private List<String> subsidiaries = new ArrayList<>(); // 4 each Set od data
+    private Set<String> subCountries = new LinkedHashSet<>();
     private List<String> activities = new ArrayList<>();
     private List<String> dataSources = new ArrayList<>();
 

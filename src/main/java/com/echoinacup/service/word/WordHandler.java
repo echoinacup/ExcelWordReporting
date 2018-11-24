@@ -213,7 +213,7 @@ public class WordHandler {
                 company.getDetailsOfServicesOffered(),
                 company.getStockExchangeName(),
                 company.getListingDate(),
-                company.getSubsidiaries()
+                company.getSubCountries()
         );
         placeholderMap.put("desc", desc);
 
@@ -249,7 +249,7 @@ public class WordHandler {
                 project.getCountry(),
                 project.getProjectName(),
                 project.getConstructionComprises(),
-                project.getSector(),
+                project.getProjectType(),
                 project.getTotalAreaSize(),
                 project.getTotalRentableArea(),
                 project.getAdditionalArea(),
@@ -272,22 +272,21 @@ public class WordHandler {
                                    String detailsOfServicesOffered,
                                    String stockExchangeName,
                                    String listingDate,
-                                   List<String> subsidiaries) {
+                                   Set<String> subCountries) {
 
         // always have company name, city and country and sector.
-        subsidiaries.removeAll(Arrays.asList(null, "", " "));
 
         String sentence1 = "Incorporated in " + inceptionDate;
         String sentence11 = " with headquarters in " + city + ", " + country + ". ";
-        String sentence2 = corporateName + " is a " + legalStructure + " company " + "operating within the " + sector + " sector.";
-        String sentence3 = " The company is engaged in " + productsServicesOffered + ".";
-        String sentence4 = " The Company provides " + cutExtraDescForDetails(detailsOfServicesOffered) + ".";
-        String sentence5 = " The company has investments and subsidiaries operating in " + insertSubsidiaries(subsidiaries) + ". ";
-        String sentencePublic = corporateName + " is a public company listed on the " + stockExchangeName + " since " + listingDate + ".";
-        String sentencePrivate = "" + corporateName + " is a private company.";
+        String sentence2 = corporateName + " is a " + legalStructure + " company " + "operating within the " + sector + " sector. ";
+        String sentence3 = "The company is engaged in " + productsServicesOffered + ". ";
+        String sentence4 = "The Company provides " + cutExtraDescForDetails(detailsOfServicesOffered) + ". ";
+        String sentence5 = "The company has investments and subsidiaries operating in " + insertSubsidiaries(subCountries) + ". ";
+        String sentencePublic = corporateName + " is a public company listed on the " + stockExchangeName + " since " + listingDate + ". ";
+        String sentencePrivate = corporateName + " is a private company.";
 
         StringBuilder sb = new StringBuilder();
-        sb.append(StringUtils.isNotEmpty(sentence1) ? sentence1 : "");
+        sb.append(StringUtils.isNotEmpty(inceptionDate) ? sentence1 : "");
         if (StringUtils.isNotEmpty(city) && StringUtils.isNotEmpty(country)) {
             sb.append(sentence11);
         } else {
@@ -296,7 +295,7 @@ public class WordHandler {
         sb.append(sentence2);
         sb.append(StringUtils.isNotEmpty(productsServicesOffered) ? sentence3 : "");
         sb.append(StringUtils.isNotEmpty(detailsOfServicesOffered) ? sentence4 : "");
-        sb.append(!subsidiaries.isEmpty() ? sentence5 : "");
+        sb.append(StringUtils.isNotEmpty(insertSubsidiaries(subCountries)) ? sentence5 : "");
         sb.append(status == Status.PUBLIC ? sentencePublic : sentencePrivate);
 
 
@@ -308,7 +307,7 @@ public class WordHandler {
             String country,
             String projectName,
             String constructionComprises,
-            String sector,
+            String projectType,
             String totalAreaSize,
             String totalRentableArea,
             String additionalArea,
@@ -317,7 +316,7 @@ public class WordHandler {
     ) {
         String sentence1 = "Located in " + city + ", " + country + ". ";
         String sentence2 = projectName + " is a " + constructionComprises + ". ";
-        String sentence3 = sector + " total area-size is about " + formatThousands(totalAreaSize) + " square meters";
+        String sentence3 = projectType + " total area-size is about " + formatThousands(totalAreaSize) + " square meters ";
         String sentence31 = "while the leasing area is " + formatThousands(totalRentableArea) + " square meter ";
         String sentence32 = "in addition to " + formatThousands(additionalArea) + " square meter of open spaces. ";
         String sentence4 = projectName + " was completed on " + completionDate + ".";
@@ -325,10 +324,12 @@ public class WordHandler {
 
         StringBuilder sb = new StringBuilder();
         sb.append(sentence1);
-        if (StringUtils.isNotEmpty(projectName) && StringUtils.isNotEmpty(constructionComprises)) {
+        if (StringUtils.isNotEmpty(projectName) && StringUtils.isNotEmpty(totalAreaSize)) {
             sb.append(sentence2);
         }
-        sb.append(sentence3);
+        if (StringUtils.isNotEmpty(projectType) && StringUtils.isNotEmpty(constructionComprises)) {
+            sb.append(sentence3);
+        }
         sb.append(StringUtils.isNotEmpty(totalRentableArea) ? sentence31 : StringUtils.isEmpty(additionalArea) ? "." : " ");
         sb.append(StringUtils.isNotEmpty(additionalArea) ? sentence32 : ".");
         if (StringUtils.isNotEmpty(projectName) && StringUtils.isNotEmpty(completionDate)) {
@@ -352,15 +353,12 @@ public class WordHandler {
         return "";
     }
 
-    private String insertSubsidiaries(List<String> subsidiaries) {
-        List<List<String>> subSets = Lists.partition(subsidiaries, 4);
-        Set<String> set = new HashSet<>();
-        for (List<String> subSet : subSets) {
-            if (subSet.size() == 4 && StringUtils.isNotEmpty(subSet.get(3))) {
-                set.add(subSet.get(3));
-            }
+    private String insertSubsidiaries(Set<String> subCountries) {
+        subCountries.removeAll(Arrays.asList(null, "", " "));
+        if (!subCountries.isEmpty()) {
+            return String.join(", ", subCountries);
         }
-        return String.join(", ", set);
+        return "";
     }
 
 

@@ -45,4 +45,9 @@ public class HelpUtils {
         }
         return "";
     }
+
+    public static String trimWithNonBrackeSpace(String str) {
+        String result = str.replace('\u00A0', ' ').trim();
+        return result;
+    }
 }
