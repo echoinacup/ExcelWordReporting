@@ -70,7 +70,7 @@ public class WordHandler {
 
         String name = company.getCorporateName().isEmpty() ? "" : company.getCorporateName();
 
-        try (FileOutputStream out = new FileOutputStream(new File(path + File.separator + name + " .docx"))) {
+        try (FileOutputStream out = new FileOutputStream(new File(path + File.separator + name + ".docx"))) {
 
             basicReplacement(resultReport, placeholderMap);
 
@@ -106,7 +106,7 @@ public class WordHandler {
 
         String name = project.getProjectName().isEmpty() ? "" : project.getProjectName();
 
-        try (FileOutputStream out = new FileOutputStream(new File(path + File.separator + name + " report.docx"))) {
+        try (FileOutputStream out = new FileOutputStream(new File(path + File.separator + name + ".docx"))) {
 
             basicReplacement(resultReport, placeholderMap);
             try {

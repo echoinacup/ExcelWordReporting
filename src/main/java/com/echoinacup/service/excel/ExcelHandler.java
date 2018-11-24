@@ -211,14 +211,14 @@ public class ExcelHandler {
                 Cell cell = r.getCell(i, xRow.RETURN_BLANK_AS_NULL);
                 String str = getCellValueAsString(cell);
 
-
                 if (isSubsidiary) {
                     if (!DATE_HEADER.equals(str)) {
-                        company.getSubsidiaries().add(str);
-                        if (i == 5) {
-                            company.getSubCountries().add(str);
+                        if (StringUtils.isNotEmpty(str)) {
+                            company.getSubsidiaries().add(str);
+                            if (i == 5) {
+                                company.getSubCountries().add(str);
+                            }
                         }
-
                     } else {
                         isSubsidiary = false;
                         isActivities = true;
@@ -226,7 +226,9 @@ public class ExcelHandler {
                     }
                 } else if (isActivities) {
                     if (!StringUtils.equals(DATA_SOURCES_HEADER, str)) {
-                        company.getActivities().add(str);
+                        if (StringUtils.isNotEmpty(str)) {
+                            company.getActivities().add(str);
+                        }
                     } else {
                         isActivities = false;
                         isDataSources = true;
@@ -234,7 +236,9 @@ public class ExcelHandler {
                     }
                 } else if (isDataSources) {
                     if (!SUBSIDIARY_HEADER.equals(str)) {
-                        company.getDataSources().add(str);
+                        if (StringUtils.isNotEmpty(str)) {
+                            company.getDataSources().add(str);
+                        }
                     } else {
                         isDataSources = false;
                         isSubsidiary = true;
