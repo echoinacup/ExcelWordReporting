@@ -6,7 +6,6 @@ import com.echoinacup.service.file.FileService;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.*;
-import org.apache.xmlbeans.XmlException;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRow;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,6 +16,8 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import static com.echoinacup.service.word.WordUtils.*;
+import static com.echoinacup.utils.ExcelUtils.getCtRowWithStyle;
+import static com.echoinacup.utils.ExcelUtils.handleEmptyXSSFRow;
 import static com.echoinacup.utils.HelpUtils.*;
 
 public class WordHandler {
@@ -78,7 +79,7 @@ public class WordHandler {
                 XWPFTable tableSubsidiaries = resultReport.getTables().get(1);
                 XWPFTable tableActivities = resultReport.getTables().get(2);
                 XWPFTable tableDataSource = resultReport.getTables().get(3);
-                List<List<String>> subSets = Lists.partition(company.getSubsidiaries(), 4);
+                List<List<String>> subSets = fileterEmptySubsets(Lists.partition(company.getSubsidiaries(), 4));
                 List<List<String>> subSetsActivity = Lists.partition(company.getActivities(), 3);
                 List<List<String>> subSetsDataSources = Lists.partition(company.getDataSources(), 1);
                 addRowsToTable(tableSubsidiaries, subSets);
@@ -181,7 +182,7 @@ public class WordHandler {
         placeholderMap.put("title", company.getCorporateName());
         placeholderMap.put("corpName", company.getCorporateName());
         placeholderMap.put("paidUpCapital", formatStringNumberWithDelimiters(company.getPaidupCapital()));
-        placeholderMap.put("shareParValue", company.getShareParValue());
+        placeholderMap.put("shareParValue", roundDecimalValues(company.getShareParValue()));
         placeholderMap.put("numberOfShares", formatStringNumberWithDelimiters(company.getNumberOfShares()));
         placeholderMap.put("legalStructure", company.getLegalStructure());
         placeholderMap.put("currency", company.getCurrency());
@@ -279,8 +280,8 @@ public class WordHandler {
         String sentence1 = "Incorporated in " + inceptionDate;
         String sentence11 = " with headquarters in " + city + ", " + country + ". ";
         String sentence2 = corporateName + " is a " + legalStructure + " company " + "operating within the " + sector + " sector. ";
-        String sentence3 = "The company is engaged in " + productsServicesOffered + ". ";
-        String sentence4 = "The Company provides " + cutExtraDescForDetails(detailsOfServicesOffered) + ". ";
+        String sentence3 = "The company is engaged in " + handleTwoDots(productsServicesOffered) + ". ";
+        String sentence4 = "The Company provides " + cutExtraDescForDetails(handleTwoDots(detailsOfServicesOffered)) + ". ";
         String sentence5 = "The company has investments and subsidiaries operating in " + insertSubsidiaries(subCountries) + ". ";
         String sentencePublic = corporateName + " is a public company listed on the " + stockExchangeName + " since " + listingDate + ". ";
         String sentencePrivate = corporateName + " is a private company.";
@@ -315,7 +316,7 @@ public class WordHandler {
 
     ) {
         String sentence1 = "Located in " + city + ", " + country + ". ";
-        String sentence2 = projectName + " is a " + constructionComprises + ". ";
+        String sentence2 = projectName + " is a " + handleTwoDots(constructionComprises) + ". ";
         String sentence3 = projectType + " total area-size is about " + formatThousands(totalAreaSize) + " square meters ";
         String sentence31 = "while the leasing area is " + formatThousands(totalRentableArea) + " square meter ";
         String sentence32 = "in addition to " + formatThousands(additionalArea) + " square meter of open spaces. ";
@@ -376,17 +377,6 @@ public class WordHandler {
         tbl.removeRow(1);
     }
 
-    private CTRow getCtRowWithStyle(XWPFTableRow rowTemplate) {
-        XWPFTableRow oldRow = rowTemplate;
-        CTRow ctrow = null;
-        try {
-            ctrow = CTRow.Factory.parse(oldRow.getCtRow().newInputStream());
-
-        } catch (XmlException | IOException e) {
-            System.out.println(e.getMessage());
-        }
-        return ctrow;
-    }
 
     private void addRowsToTableDataSources(XWPFTable tbl, List<List<String>> subSets) {
         for (List<String> subSet : subSets) {

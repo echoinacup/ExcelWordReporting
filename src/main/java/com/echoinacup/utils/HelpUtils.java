@@ -2,10 +2,13 @@ package com.echoinacup.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class HelpUtils {
 
@@ -46,8 +49,32 @@ public class HelpUtils {
         return "";
     }
 
-    public static String trimWithNonBrackeSpace(String str) {
+    public static String trimWithNonBrakeSpace(String str) {
         String result = str.replace('\u00A0', ' ').trim();
         return result;
+    }
+
+    public static String roundDecimalValues(String value) {
+        String res = value.replace(",", ".");
+        BigDecimal bd = new BigDecimal(res);
+        return bd.setScale(1, BigDecimal.ROUND_HALF_UP).toPlainString();
+    }
+
+    public static String handleTwoDots(String value) {
+        String result = value;
+        if (StringUtils.isNotEmpty(value) && StringUtils.endsWith(value, ".")) {
+            result = value.substring(0, value.length() - 1);
+        }
+        return result;
+    }
+
+    public static boolean isListEmpty(List<String> l) {
+        List<String> result = l.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
+        return result.isEmpty();
+    }
+
+    public static List<List<String>> fileterEmptySubsets(List<List<String>> subsets) {
+        List<List<String>> filtered = subsets.stream().filter(l -> !isListEmpty(l)).collect(Collectors.toList());
+        return filtered;
     }
 }

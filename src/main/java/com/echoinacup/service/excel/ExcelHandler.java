@@ -20,7 +20,8 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import static com.echoinacup.utils.ExcelHeader.*;
-import static com.echoinacup.utils.HelpUtils.trimWithNonBrackeSpace;
+import static com.echoinacup.utils.ExcelUtils.handleEmptyXSSFRow;
+import static com.echoinacup.utils.HelpUtils.trimWithNonBrakeSpace;
 
 public class ExcelHandler {
 
@@ -55,7 +56,7 @@ public class ExcelHandler {
 
                 if (initHeaderMap(headerMap, r)) continue;
 
-                if (handleEmptyRow(r)) continue;
+                if (handleEmptyXSSFRow(r)) continue;
 
                 Map<String, String> entitiesMap = populateMapForEntityCreation(headerMap, r);
 
@@ -86,13 +87,12 @@ public class ExcelHandler {
 
                 if (initHeaderMap(headerMap, r)) continue;
 
-                if (handleEmptyRow(r)) continue;
+                if (handleEmptyXSSFRow(r)) continue;
 
                 Map<String, String> entitiesMap = populateMapForEntityCreation(headerMap, r);
 
                 projects.add(projectCreator(entitiesMap));
             }
-
 
         } catch (IOException | InvalidFormatException e) {
             System.out.println(e.getMessage());
@@ -204,7 +204,7 @@ public class ExcelHandler {
         start:
         for (int rowNum = rowStart + 1; rowNum <= rowEnd; rowNum++) {
             XSSFRow r = spreadsheet.getRow(rowNum);
-            if (handleEmptyRow(r)) continue;
+            if (handleEmptyXSSFRow(r)) continue;
 
 
             for (int i = 2; i < r.getLastCellNum(); i++) {
@@ -218,6 +218,8 @@ public class ExcelHandler {
                             if (i == 5) {
                                 company.getSubCountries().add(str);
                             }
+                        } else {
+                            company.getSubsidiaries().add(""); //Al Fajar Al Alamia
                         }
                     } else {
                         isSubsidiary = false;
@@ -259,7 +261,7 @@ public class ExcelHandler {
         start:
         for (int rowNum = rowStart + 1; rowNum <= rowEnd; rowNum++) {
             XSSFRow r = spreadsheet.getRow(rowNum);
-            if (handleEmptyRow(r)) continue;
+            if (handleEmptyXSSFRow(r)) continue;
 
 
             for (int i = 2; i < r.getLastCellNum(); i++) {
@@ -323,26 +325,8 @@ public class ExcelHandler {
         return false;
     }
 
-    private boolean handleEmptyRow(XSSFRow r) {
-        if (r == null) {
-            return true;
-        } else if (isRowWithEmptyFields(r)) {
-            return true;
-        }
-        return false;
-    }
 
-    private boolean isRowWithEmptyFields(XSSFRow r) {
-        for (int i = 0; i < r.getLastCellNum(); i++) {
-            Cell cell = r.getCell(i, xRow.RETURN_NULL_AND_BLANK);
-            if ((cell == null) || (cell.equals("")) || (cell.getCellType() == cell.CELL_TYPE_BLANK)) {
-                i++;
-            } else {
-                return false;
-            }
-        }
-        return true;
-    }
+
 
     private void fillInDescriptionMapWithKeys(XSSFRow r, Map<String, String> headerMap) {
         for (int i = 0; i < r.getLastCellNum(); i++) {
@@ -365,7 +349,7 @@ public class ExcelHandler {
         if (cell != null) {
             switch (cell.getCellTypeEnum()) {
                 case STRING:
-                    strCellValue = trimWithNonBrackeSpace(cell.toString());
+                    strCellValue = trimWithNonBrakeSpace(cell.toString());
                     break;
                 case NUMERIC:
                     if (DateUtil.isCellDateFormatted(cell)) {
