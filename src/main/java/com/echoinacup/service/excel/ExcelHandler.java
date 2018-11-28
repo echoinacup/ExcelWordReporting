@@ -101,8 +101,7 @@ public class ExcelHandler {
     }
 
     private Map<String, String> populateMapForEntityCreation(Map<String, String> headerMap, XSSFRow r) {
-        Map<String, String> entitiesMap = new LinkedHashMap<>();
-        entitiesMap.putAll(headerMap);
+        Map<String, String> entitiesMap = new LinkedHashMap<>(headerMap);
 
         List<String> values = new ArrayList<>();
 
@@ -213,13 +212,15 @@ public class ExcelHandler {
 
                 if (isSubsidiary) {
                     if (!DATE_HEADER.equals(str)) {
-                        if (StringUtils.isNotEmpty(str)) {
-                            company.getSubsidiaries().add(str);
-                            if (i == 5) {
-                                company.getSubCountries().add(str);
+                        if (i <= 5) {
+                            if (StringUtils.isNotEmpty(str)) {
+                                company.getSubsidiaries().add(str);
+                                if (i == 5) {
+                                    company.getSubCountries().add(str);
+                                }
+                            } else {
+                                company.getSubsidiaries().add("");
                             }
-                        } else {
-                            company.getSubsidiaries().add(""); //Al Fajar Al Alamia
                         }
                     } else {
                         isSubsidiary = false;
@@ -324,8 +325,6 @@ public class ExcelHandler {
         }
         return false;
     }
-
-
 
 
     private void fillInDescriptionMapWithKeys(XSSFRow r, Map<String, String> headerMap) {

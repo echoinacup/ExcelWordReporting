@@ -85,7 +85,7 @@
                             <!--<headerType>console</headerType>-->
                             <headerType>gui</headerType>
                             <jar>target/JavaFxTest-1.0.0-jar-with-dependencies.jar</jar>
-                            <outfile>target/FileSelector.exe</outfile>
+                            <outfile>target/ReportCreator.exe</outfile>
                             <downloadUrl>http://java.com/download</downloadUrl>
                             <classPath>
                                 <mainClass>com.echoinacup.main.Main</mainClass>
