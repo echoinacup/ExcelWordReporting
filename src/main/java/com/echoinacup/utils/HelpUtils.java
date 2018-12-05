@@ -14,6 +14,12 @@ public class HelpUtils {
 
 
     public static String formatStringNumberWithDelimiters(String value) throws NumberFormatException {
+        if (StringUtils.isEmpty(value)) {
+            return "";
+        }
+        if (!StringUtils.isNumeric(value)) {
+            return value;
+        }
         double amount = 0;
         DecimalFormat formatter = new DecimalFormat("#,###");
         if (StringUtils.isNotEmpty(value)) {
@@ -24,11 +30,23 @@ public class HelpUtils {
     }
 
     public static String formatStringToLatitude(String value) throws NumberFormatException {
+        if (StringUtils.isEmpty(value)) {
+            return "";
+        }
+        if (!StringUtils.isNumeric(value)) {
+            return value;
+        }
         DecimalFormat formatter = new DecimalFormat("0.000000");
         return formatter.format(Double.parseDouble(value)).replace(',', '.');
     }
 
     public static String formatToSqrMeters(String value) throws NumberFormatException {
+        if (StringUtils.isEmpty(value)) {
+            return "";
+        }
+        if (!StringUtils.isNumeric(value)) {
+            return value;
+        }
         double amount = 0;
         DecimalFormat formatter = new DecimalFormat("###,###");
         if (StringUtils.isNotEmpty(value)) {
@@ -39,6 +57,9 @@ public class HelpUtils {
 
     public static String formatThousands(String value) {
         if (StringUtils.isNotEmpty(value)) {
+            if (!StringUtils.isNumeric(value)) {
+                return value;
+            }
             DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
             DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
 
@@ -55,6 +76,12 @@ public class HelpUtils {
     }
 
     public static String roundDecimalValues(String value) {
+        if (StringUtils.isEmpty(value)) {
+            return "";
+        }
+        if (!StringUtils.isNumeric(value)) {
+            return value;
+        }
         String res = value.replace(",", ".");
         BigDecimal bd = new BigDecimal(res);
         return bd.setScale(1, BigDecimal.ROUND_HALF_UP).toPlainString();
